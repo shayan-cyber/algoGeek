@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <style>
+    body {
+      background-color: #f3f7f7;
+    }
+    #problems {
+      box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      border-radius: 0rem;
+      margin-top: -0.3rem;
+      font-family: OpenSans, Arial, Helvetica, sans-serif;
+      font-style: normal;
+      padding-top: 1.5rem;
+      padding-bottom: 1.2rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    /* .btn {
+      box-shadow: 1px 2px 47px -2px rgba(0, 0, 0, 0.26);
+      -webkit-box-shadow: 1px 2px 47px -2px rgba(0, 0, 0, 0.26);
+      -moz-box-shadow: 1px 2px 47px -2px rgba(0, 0, 0, 0.26);
+    } */
+    #problems:hover {
+      background-color: #f3f7f7;
+    }
+    #solve {
+      border-radius: 0rem;
+      margin-left: 3rem;
+      margin-top: -1rem;
+    }
+  </style>
+  <body>
+    <!-- Navbar start -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">algoShush</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Dropdown
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link disabled"
+                href="#"
+                tabindex="-1"
+                aria-disabled="true"
+                >Disabled</a
+              >
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-light" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <!-- Navbar end -->
+
+    <div class="container mt-5">
+      <!-- card start -->
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br /><br /><br />
+      <!-- card end -->
+      <!-- questions start -->
+
+      {% for i in ques %}
+      <div id="problems" class="card">
+        <div class="card-body">
+          <h5
+            style="font-weight: 400; color: #0e141e; font-size: 21px"
+            class="card-title"
+          >
+            {{i.title}}
+          </h5>
+          <div class="row">
+            <div class="col-md-9">
+              <p
+                style="font-weight: 100; color: #738f93; font-size: 12px"
+                class="card-text"
+              >
+                <strong style="color: #0d6efd"
+                  >{{i.get_difficulty_display }},</strong
+                >
+                {{i.description|truncatechars:150}}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                  <a
+                    style="
+                      text-decoration: none;
+                      cursor: pointer;
+                      padding-bottom: 0.2rem;
+                    "
+                    href="#"
+                    ><img
+                      style="margin-top: -0.6rem"
+                      src="https://img.icons8.com/plumpy/24/000000/star--v1.png"
+                  /></a>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-7">
+                  <a
+                    style="
+                      font-family: SourceCodePro, monaco, Courier, monospace;
+                      font-size: 19px;
+                      font-style: normal;
+                      font-weight: 600;
+                      line-height: 17px;
+                    "
+                    id="solve"
+                    href="{% url 'problem' i.pk %}"
+                    class="btn btn-outline-primary btn-lg"
+                    >Solve</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+
+      <!-- questions end -->
+    </div>
+  </body>
+</html>
