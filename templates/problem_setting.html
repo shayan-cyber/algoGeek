@@ -1,197 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-      crossorigin="anonymous"
-    ></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
 
-    <script
-      src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js"
-      referrerpolicy="origin"
-    ></script>
-    <script>
-      tinymce.init({
-        selector: "#mytextarea",
-        height: 500,
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+    crossorigin="anonymous"></script>
 
-        plugins: "image code",
-        toolbar: "undo redo | link image | code",
-        /* enable title field in the Image dialog*/
-        image_title: true,
-        /* enable automatic uploads of images represented by blob or data URIs*/
-        automatic_uploads: true,
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+  <script>
+    tinymce.init({
+      selector: "#mytextarea",
+      height: 500,
+
+      plugins: "image code",
+      toolbar: "undo redo | link image | code",
+      /* enable title field in the Image dialog*/
+      image_title: true,
+      /* enable automatic uploads of images represented by blob or data URIs*/
+      automatic_uploads: true,
+      /*
+      URL of our upload handler (for more details check: https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_url)
+      images_upload_url: 'postAcceptor.php',
+      here we add custom filepicker only to Image dialog
+    */
+      file_picker_types: "image",
+      /* and here's our custom image picker*/
+      file_picker_callback: function (cb, value, meta) {
+        var input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
+
         /*
-        URL of our upload handler (for more details check: https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_url)
-        images_upload_url: 'postAcceptor.php',
-        here we add custom filepicker only to Image dialog
-      */
-        file_picker_types: "image",
-        /* and here's our custom image picker*/
-        file_picker_callback: function (cb, value, meta) {
-          var input = document.createElement("input");
-          input.setAttribute("type", "file");
-          input.setAttribute("accept", "image/*");
+          Note: In modern browsers input[type="file"] is functional without
+          even adding it to the DOM, but that might not be the case in some older
+          or quirky browsers like IE, so you might want to add it to the DOM
+          just in case, and visually hide it. And do not forget do remove it
+          once you do not need it anymore.
+        */
 
-          /*
-            Note: In modern browsers input[type="file"] is functional without
-            even adding it to the DOM, but that might not be the case in some older
-            or quirky browsers like IE, so you might want to add it to the DOM
-            just in case, and visually hide it. And do not forget do remove it
-            once you do not need it anymore.
-          */
+        input.onchange = function () {
+          var file = this.files[0];
 
-          input.onchange = function () {
-            var file = this.files[0];
+          var reader = new FileReader();
+          reader.onload = function () {
+            /*
+                  Note: Now we need to register the blob in TinyMCEs image blob
+                  registry. In the next release this part hopefully won't be
+                  necessary, as we are looking to handle it internally.
+                */
+            var id = "blobid" + new Date().getTime();
+            var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+            var base64 = reader.result.split(",")[1];
+            var blobInfo = blobCache.create(id, file, base64);
+            blobCache.add(blobInfo);
 
-            var reader = new FileReader();
-            reader.onload = function () {
-              /*
-                    Note: Now we need to register the blob in TinyMCEs image blob
-                    registry. In the next release this part hopefully won't be
-                    necessary, as we are looking to handle it internally.
-                  */
-              var id = "blobid" + new Date().getTime();
-              var blobCache = tinymce.activeEditor.editorUpload.blobCache;
-              var base64 = reader.result.split(",")[1];
-              var blobInfo = blobCache.create(id, file, base64);
-              blobCache.add(blobInfo);
-
-              /* call the callback and populate the Title field with the file name */
-              cb(blobInfo.blobUri(), { title: file.name });
-            };
-            reader.readAsDataURL(file);
+            /* call the callback and populate the Title field with the file name */
+            cb(blobInfo.blobUri(), { title: file.name });
           };
+          reader.readAsDataURL(file);
+        };
 
-          input.click();
-        },
-        content_style:
-          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-      });
-    </script>
-  </head>
+        input.click();
+      },
+      content_style:
+        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+    });
+  </script>
+</head>
 
-  <body>
-    <!-- Navbar start -->
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">algoShush</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dropdown
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
-                  <hr class="dropdown-divider" />
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link disabled"
-                href="#"
-                tabindex="-1"
-                aria-disabled="true"
-                >Disabled</a
-              >
-            </li>
-          </ul>
-          <form class="d-flex">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-light" type="submit">Search</button>
-          </form>
+<body>
+  <!-- Navbar start -->
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">algoShush</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+          <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  <!-- Navbar end -->
+  <div class="container mt-4">
+    <div class="alert alert-primary" role="alert">
+      <h2 style="font-weight: 300;"><strong>Contest</strong> : {{contest.title}}</h2>
+    </div>
+
+    <br>
+    <strong style="margin-left: 0.5rem;">Questions: </strong>
+    <br>
+    <br>
+    
+    {% for i in ques %}
+    <div style="width: 80%;" class="alert alert-info " role="alert">
+      <div class="row">
+        <div class="col-9">
+          <span><strong>{{forloop.counter}}.</strong> </span>{{i.title}}
+        </div>
+        <div class="col-3">
+          <button class="btn btn-outline-primary">Edit <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+              fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+              <path
+                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+              <path fill-rule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+            </svg>
+          </button>
         </div>
       </div>
-    </nav>
-    <!-- Navbar end -->
-    <div class="container mt-4">
-      <h2>{{contest.title}}</h2>
-
-    </div>
-    <div class="container mt-4">
-        <form action="{% url 'problem_setting' %}" method="POST">
-            {% csrf_token %}
-            <label for="mytextarea" class="form-label">Description</label>
-            <textarea name="description" id="mytextarea">Hello, World!</textarea>
-            <label for="test_cases" class="form-label">Test Cases</label>
-            <textarea name="test_cases" class="form-control" id="test_cases" cols="30" rows="20"></textarea>
-            <label for="input_cases" class="form-label">Input Cases</label>
-            <textarea name="input_cases" class="form-control" id="input_cases" cols="30" rows="20"></textarea>
-            <label for="time_limit" class="form-label">Time Limit</label>
-            <input type="number" id="time_limit" class="form-control" name="time_limit">
-            <input type="text" value="{{contest.id}}" name="contest_id" style="display: none;">
-            <input type="text" value="{{contest.unique_id}}" name="contest_uid" style="display: none;">
-
-            <label for="difficulty" class="form-label">Difficulty</label>
-            <select class="form-select form-select-sm" id="difficulty" aria-label=".form-select-sm example">
-              <option selected>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </select>
-            <label for="DsAlgo" class="form-label">Algorithm Used</label>
-            <select class="form-select form-select-sm" id="DsAlgo" aria-label=".form-select-sm example">
-              <option selected>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </select>
-
-
-            <button type="submit" class="btn btn-outline-info">Submit</button>
-        </form>
-
     </div>
 
-    
-  </body>
+    {% endfor %}
+
+
+  </div>
+  <div class="container mt-4">
+    <hr>
+    <br><br>
+    <h4><strong>Add Question</strong></h4>
+    <br><br>
+    <form action="{% url 'problem_setting' contest.id %}" method="POST">
+      {% csrf_token %}
+      <label for="title" class="form-label">Title</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+      <br>
+
+      <label for="mytextarea" class="form-label">Description</label>
+      <textarea name="description" id="mytextarea" required>Hello, World!</textarea>
+      <br>
+
+      <label for="input_cases" class="form-label">Input Cases</label>
+      <textarea name="input_cases" class="form-control" id="input_cases" cols="30" rows="10"
+        aria-describedby="inputCases"></textarea>
+      <div id="inputCases" class="form-text">Type the inputs with proper indentation and spacing</div>
+      <br>
+
+      <label for="test_cases" class="form-label">Test Cases</label>
+      <textarea name="test_cases" class="form-control" id="test_cases" cols="30" rows="10" aria-describedby="testCases"
+        required></textarea>
+      <div id="testCases" class="form-text">Type the inputs with proper indentation and spacing</div>
+      <br>
+
+
+
+      <label for="time_limit" class="form-label">Time Limit</label>
+      <input type="number" id="time_limit" class="form-control" name="time_limit" required>
+      <br>
+
+      <input type="text" value="{{contest.id}}" name="contest_id" style="display: none;">
+      <input type="text" value="{{contest.unique_id}}" name="contest_uid" style="display: none;">
+
+      <br>
+      <label for="difficulty" class="form-label">Difficulty</label>
+      <select class="form-select form-select-sm" id="difficulty" name="difficulty" aria-label=".form-select-sm example">
+        <option value="MD" selected>Medium</option>
+        <option value="ES">Easy</option>
+        <option value="HD">Hard</option>
+        <option value="VH">Very Hard</option>
+        <option value="EX">Expert</option>>
+      </select>
+      <br>
+      <label for="DsAlgo" class="form-label">Algorithm Used</label>
+      <select class="form-select form-select-sm" id="DsAlgo" name="category" aria-label=".form-select-sm example">
+        <option value="{{dsalgos.0.pk}}" selected>{{dsalgos.0.name}}</option>
+
+        {% for i in dsalgos|slice:"1:" %}
+
+        <option value="{{i.pk}}">{{i.name}}</option>
+
+
+        {% endfor %}
+
+
+      </select>
+
+
+      <br><br>
+      <hr>
+      <br>
+      <center><button type="submit" class="btn btn-outline-info btn-lg mb-5">Submit</button></center>
+      <br>
+    </form>
+
+  </div>
+
+
+</body>
+
 </html>

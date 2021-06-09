@@ -1,10 +1,10 @@
 from django.http.response import Http404
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
 # Create your views here.
 import requests
 import json
-from . models import Contest, Question
+from . models import Contest, Question,DsAlgoTopics
 import uuid
 # print(uuid.uuid4())
 RUN_URL = "https://api.hackerearth.com/v3/code/run/"
@@ -102,25 +102,40 @@ def submit_code(request,pk):
 
         return JsonResponse(msg,safe=False)
 
-def problem_setting(request):
+def problem_setting(request, pk):
+    contest = Contest.objects.filter(pk =pk)[0]
+    dsalgos = DsAlgoTopics.objects.all()
+    ques = Question.objects.filter(contest_of = contest).order_by('-curation_time')
+    print(ques)
+
+    print(contest)
+    
+
     if request.method =='POST':
-        test_case = request.POST.get('test_case','')
-        input_case = request.POST.get('input_case','')
+        test_case = request.POST.get('test_cases','')
+        input_case = request.POST.get('input_cases','')
         description = request.POST.get('description','')
         time_limit = request.POST.get('time_limit','')
         difficulty = request.POST.get('difficulty', '')
         contest_id = request.POST.get('contest_id','')
         contest_uid = request.POST.get('contest_uid','')
+        title = request.POST.get('title','')
+        category = request.POST.get('category','')
+        dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
 
         
-        question =Question.objects.filter(pk = contest_id, unique_id = contest_uid)[0]
-        print(question)
-        question.description = test_case
+        contest =Contest.objects.filter(pk = contest_id, unique_id = contest_uid)[0]
+        print(contest)
+        question = Question(title=title, description=description, time_limit=time_limit, test_cases = test_case, input_cases= input_case,difficulty=difficulty, category=dsalgo,contest_of =contest)
 
         question.save()
 
-
-    return render(request,"problem_setting.html")
+    context = {
+        "contest":contest,
+        'dsalgos':dsalgos,
+        'ques':ques,
+    }
+    return render(request,"problem_setting.html",context)
 
 def contests(request):
     questions = Question.objects.all()
@@ -157,7 +172,7 @@ def add_contest(request):
         context={
             'contest':search_contest,
         }
-        return render(request, "problem_setting.html",context)
+        return redirect("/problem_setting/" + str(search_contest.pk))
 
     else:
         raise Http404()
