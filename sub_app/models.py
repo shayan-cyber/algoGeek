@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 DIFFICULTY_CHOICES =[
     ('ES', 'Easy'),
     ('MD', 'Medium'),
@@ -12,6 +13,14 @@ DSALGO_TYPES =[
     ('DS','Data Structures'),
     ('AL', 'Algorithms')
 ]
+
+
+
+TYPE_OF_PROFILE =[
+    ('CU','Curator'),
+    ('LR','Learner')
+]
+
 # Create your models here.
 
 class Contest(models.Model):
@@ -44,3 +53,9 @@ class Question(models.Model):
 
     def __str__(self):
         return str(self.title)
+class Profile(models.Model):
+    type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.CharField(max_length=100,default=" ")
+    def __str__(self):
+        return str(self.user.username)

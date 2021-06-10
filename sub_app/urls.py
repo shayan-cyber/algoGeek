@@ -9,6 +9,9 @@ urlpatterns =[
     path("problem/<int:pk>", views.problem, name="problem"),
     path("profile/<int:pk>", views.profile_visit, name="profile"),
     path("add_contest", views.add_contest, name="add_contest"),
+    path('register', views.register, name='register'),
+    path('signUp', views.signUp, name="signUp"),
+    path('log_in',views.log_in, name="log_in")
     
 
 ]

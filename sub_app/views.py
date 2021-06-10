@@ -1,18 +1,21 @@
 from django.http.response import Http404
 from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
-# Create your views here.
 import requests
 import json
 from . models import Contest, Question,DsAlgoTopics
 import uuid
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+
 # print(uuid.uuid4())
 RUN_URL = "https://api.hackerearth.com/v3/code/run/"
 
 
 def home(request):
    
-    return HttpResponse("home")
+    return render(request,"home.html")
 
 
 def run_code(request):
@@ -180,3 +183,53 @@ def profile_visit(request,pk):
     return render(request, "profile.html")
 # def add_problem(request):
 #     return render(request, "problem_setting.html")
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('/contests')
+    else:
+        return render(request,"register.html")
+
+def signUp(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        name = request.POST.get('name','')
+        username = request.POST.get('username', '')
+        password = request.POST.get('pass', '')
+        conf_pass = request.POST.get('conf_pass','')
+        usercheck = User.objects.filter(username =username)
+
+        if len(username)>20:
+            messages.warning(request,"User name is too long")
+        elif usercheck:
+            messages.warning(request, "User name already exists")
+        elif password != conf_pass:
+            messages.warning(request, "Passwords Do not Match")
+        else:
+            user_ = User.objects.create_user(
+                first_name =name,
+                password=password,
+                username =username,
+                email = email
+            )
+            user_.save()
+            messages.success(request,"Account Created Successfully")
+        # return render(request, "register.html")
+        return redirect('/register')
+    else:
+        raise Http404()
+def log_in(request):
+    if request.method =="POST":
+        username = request.POST.get('username_login','')
+        password = request.POST.get('pass_login','')
+        print(username)
+        print(password)
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('/contests')
+        else:
+            messages.warning(request, "Invalid Credentials")
+            return redirect('/register')
+
+
