@@ -1,167 +1,280 @@
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <style>
-    body {
-      background-color: #f3f7f7;
-    }
-  </style>
-  <body>
-    <!-- Navbar start -->
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">algoShush</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dropdown
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
-                  <hr class="dropdown-divider" />
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link disabled"
-                href="#"
-                tabindex="-1"
-                aria-disabled="true"
-                >Disabled</a
-              >
-            </li>
-          </ul>
-          <form class="d-flex">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-light" type="submit">Search</button>
-          </form>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+    crossorigin="anonymous"></script>
+</head>
+<style>
+  body {
+    background-color: #f3f7f7;
+  }
+
+  .card {
+    box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+    -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+    -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+  }
+</style>
+
+<body>
+  <!-- Navbar start -->
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">algoShush</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+          <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
       </div>
-    </nav>
-    <!-- Navbar end -->
+    </div>
+  </nav>
+  <!-- Navbar end -->
 
-    <div class="container">
-        <a  data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="#"><svg
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            width="40"
-            height="40"
-            viewBox="0 0 172 172"
-            style="fill: #000000"
-          >
-            <g
-              fill="none"
-              fill-rule="nonzero"
-              stroke="none"
-              stroke-width="1"
-              stroke-linecap="butt"
-              stroke-linejoin="miter"
-              stroke-miterlimit="10"
-              stroke-dasharray=""
-              stroke-dashoffset="0"
-              font-family="none"
-              font-weight="none"
-              font-size="none"
-              text-anchor="none"
-              style="mix-blend-mode: normal"
-            >
-              <path d="M0,172v-172h172v172z" fill="none"></path>
-              <g>
-                <path
-                  d="M86,161.25c-41.4907,0 -75.25,-33.7593 -75.25,-75.25c0,-41.4907 33.7593,-75.25 75.25,-75.25c41.4907,0 75.25,33.7593 75.25,75.25c0,41.4907 -33.7593,75.25 -75.25,75.25z"
-                  fill="#0d6efd"
-                ></path>
-                <path
-                  d="M86,12.9c40.3082,0 73.1,32.7918 73.1,73.1c0,40.3082 -32.7918,73.1 -73.1,73.1c-40.3082,0 -73.1,-32.7918 -73.1,-73.1c0,-40.3082 32.7918,-73.1 73.1,-73.1M86,8.6c-42.7463,0 -77.4,34.6537 -77.4,77.4c0,42.7463 34.6537,77.4 77.4,77.4c42.7463,0 77.4,-34.6537 77.4,-77.4c0,-42.7463 -34.6537,-77.4 -77.4,-77.4z"
-                  fill="#4788c7"
-                ></path>
-                <path
-                  d="M43,81.7h86c2.3736,0 4.3,1.9264 4.3,4.3v0c0,2.3736 -1.9264,4.3 -4.3,4.3h-86c-2.3736,0 -4.3,-1.9264 -4.3,-4.3v0c0,-2.3736 1.9264,-4.3 4.3,-4.3z"
-                  fill="#98ccfd"
-                ></path>
-                <path
-                  d="M90.3,43v86c0,2.3736 -1.9264,4.3 -4.3,4.3v0c-2.3736,0 -4.3,-1.9264 -4.3,-4.3v-86c0,-2.3736 1.9264,-4.3 4.3,-4.3v0c2.3736,0 4.3,1.9264 4.3,4.3z"
-                  fill="#98ccfd"
-                ></path>
-              </g>
-            </g>
-          </svg></a>
+  <div class="container">
 
 
+    <div class="row mt-5">
 
-
-
-
-
-          <!-- add contest modal start -->
-          <!-- Button trigger modal -->
-
-  
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Add Contest</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="col-md-4">
+        <br>
+        <div class="row mt-3">
+          <img style="width: 10rem;" src="https://img.icons8.com/fluent/158/000000/gender-neutral-user.png" />
         </div>
-        <div class="modal-body">
-         <form method="POST" action="{% url 'add_contest' %}">{% csrf_token %}
-            <div class="row mb-3">
+        <div class="row mt-3">
+
+
+
+          <strong style="margin-left: 2.5rem;">{{prof.user.username}}</strong>
+          <p>{{prof.user.bio}}</p>
+          <br>
+          <div style="margin-left: 0.5rem;">
+            Add contest
+            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="#"><svg xmlns="http://www.w3.org/2000/svg"
+                x="0px" y="0px" width="40" height="40" viewBox="0 0 172 172" style="fill: #000000">
+                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                  stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                  font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                  style="mix-blend-mode: normal">
+                  <path d="M0,172v-172h172v172z" fill="none"></path>
+                  <g>
+                    <path
+                      d="M86,161.25c-41.4907,0 -75.25,-33.7593 -75.25,-75.25c0,-41.4907 33.7593,-75.25 75.25,-75.25c41.4907,0 75.25,33.7593 75.25,75.25c0,41.4907 -33.7593,75.25 -75.25,75.25z"
+                      fill="#0d6efd"></path>
+                    <path
+                      d="M86,12.9c40.3082,0 73.1,32.7918 73.1,73.1c0,40.3082 -32.7918,73.1 -73.1,73.1c-40.3082,0 -73.1,-32.7918 -73.1,-73.1c0,-40.3082 32.7918,-73.1 73.1,-73.1M86,8.6c-42.7463,0 -77.4,34.6537 -77.4,77.4c0,42.7463 34.6537,77.4 77.4,77.4c42.7463,0 77.4,-34.6537 77.4,-77.4c0,-42.7463 -34.6537,-77.4 -77.4,-77.4z"
+                      fill="#4788c7"></path>
+                    <path
+                      d="M43,81.7h86c2.3736,0 4.3,1.9264 4.3,4.3v0c0,2.3736 -1.9264,4.3 -4.3,4.3h-86c-2.3736,0 -4.3,-1.9264 -4.3,-4.3v0c0,-2.3736 1.9264,-4.3 4.3,-4.3z"
+                      fill="#98ccfd"></path>
+                    <path
+                      d="M90.3,43v86c0,2.3736 -1.9264,4.3 -4.3,4.3v0c-2.3736,0 -4.3,-1.9264 -4.3,-4.3v-86c0,-2.3736 1.9264,-4.3 4.3,-4.3v0c2.3736,0 4.3,1.9264 4.3,4.3z"
+                      fill="#98ccfd"></path>
+                  </g>
+                </g>
+              </svg></a>
+          </div>
+
+
+
+
+        </div>
+
+      </div>
+      <div class="col-md-8">
+        <div class="row">
+
+
+          {% for contest in contests %}
+          <div class="col-sm-6 mt-5">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-title">{{contest.title}}</h6>
+                <small style="font-weight:lighter;">{{contest.curation_time|naturaltime}}</small>
+                <p class="card-text">
+                  <br>
+                  <small><strong><span>No. of questions : {{contest.question_set.all|length}}</span></strong></small>
+                  <br>
+                  <small><span>Start time : {{contest.start_time}}</span></small>
+                  <br>
+                  <small><span>End time : {{contest.end_time}}</span></small>
+                </p>
+                <div class="row mt-2">
+                  <div class="col-md-4 mt-3">
+                    <a style="border-radius: 0.1rem;" href="{% url 'problem_setting' contest.pk %}"
+                      class="btn btn-outline-primary">View <svg style="margin-left: 0.2rem; margin-bottom:0.2rem"
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                          d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                        <path fill-rule="evenodd"
+                          d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                      </svg></a>
+
+                  </div>
+
+                  <div class="col-md-4 mt-3">
+
+                    <a style="border-radius: 0.1rem;" href="#" class="btn btn-primary" data-bs-toggle="modal"
+                      data-bs-target="#editContest{{contest.pk}}" href="#">Edit <svg
+                        style="margin-left: 0.2rem; margin-bottom:0.2rem" xmlns="http://www.w3.org/2000/svg" width="16"
+                        height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                        <path
+                          d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                      </svg></a>
+
+                  </div>
+                  <div class="col-md-4 mt-3">
+                    <a style="border-radius: 0.1rem;" href="{% url 'delete_contest' contest.pk %}"
+                      class="btn btn-outline-danger">Delete <svg style="margin-left: 0.2rem; margin-bottom:0.2rem"
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-trash" viewBox="0 0 16 16">
+                        <path
+                          d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                        <path fill-rule="evenodd"
+                          d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                      </svg></a>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+
+
+            <!-- modal start edit contest -->
+
+
+            <div class="modal fade" id="editContest{{contest.pk}}" data-bs-backdrop="static" data-bs-keyboard="false"
+              tabindex="-1" aria-labelledby="editContest{{contest.pk}}Label" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editContest{{contest.pk}}Label">Edit Contest <small
+                        style="font-weight: lighter;"> ({{contest.title}})</small></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="POST" action="{% url 'edit_contest' contest.pk %}">{% csrf_token %}
+                      <div class="row mb-3">
+
+                        <label for="contestTitle" class="col-sm-3 col-form-label mt-2">Title</label>
+                        <div class="col-sm-9 mt-2">
+                          <input type="text" name="title_edit" class="form-control" id="contestTitle"
+                            value="{{contest.title}}">
+                        </div>
+
+                        <label for="startTime" class="col-sm-3 col-form-label mt-2">Start Time</label>
+                        <div class="col-sm-9 mt-2">
+                          <input class="form-control" type="datetime-local" id="startTime" name="start_time_edit" required>
+                        </div>
+
+                        <label for="endTime" class="col-sm-3 col-form-label mt-2">End Time</label>
+                        <div class="col-sm-9 mt-2">
+                          <input class="form-control" type="datetime-local" id="endTime" name="end_time_edit" required>
+                        </div>
+
+                        <label for="endTime" class="col-sm-3 col-form-label mt-2">Difficulty</label>
+                        <div class="col-sm-9 mt-2">
+                          <select class="form-select form-select-md" name="difficulty_edit"
+                            aria-label=".form-select-md example">
+                            <option value="MD" selected>Medium</option>
+                            <option value="ES">Easy</option>
+                            <option value="HD">Hard</option>
+                            <option value="VH">Very Hard</option>
+                            <option value="EX">Expert</option>
+                          </select>
+                        </div>
+
+
+                      </div>
+                      <center><button type="submit" class="btn btn-primary mt-4 mb-4">Curate</button></center>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!-- modal end -->
+          </div>
+
+          {% endfor %}
+
+
+
+
+        </div>
+
+
+      </div>
+    </div>
+    <br><br>
+
+
+
+
+
+
+
+
+    <!-- add contest modal start -->
+    <!-- Button trigger modal -->
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Add Contest</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{% url 'add_contest' %}">{% csrf_token %}
+              <div class="row mb-3">
 
                 <label for="contestTitle" class="col-sm-3 col-form-label mt-2">Title</label>
                 <div class="col-sm-9 mt-2">
@@ -192,14 +305,15 @@
 
               </div>
               <center><button type="submit" class="btn btn-primary mt-4 mb-4">Curate</button></center>
-         </form>
+            </form>
+          </div>
+
         </div>
-        
       </div>
     </div>
+    <!-- add contest modal end -->
+
   </div>
-          <!-- add contest modal end -->
-      
-    </div>
-  </body>
+</body>
+
 </html>

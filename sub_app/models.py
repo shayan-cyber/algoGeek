@@ -22,6 +22,12 @@ TYPE_OF_PROFILE =[
 ]
 
 # Create your models here.
+class Profile(models.Model):
+    type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.CharField(max_length=100,default=" ")
+    def __str__(self):
+        return str(self.user.username)
 
 class Contest(models.Model):
     title = models.CharField(max_length = 50)
@@ -29,7 +35,8 @@ class Contest(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     difficulty = models.CharField(max_length=2,choices=DIFFICULTY_CHOICES, default='MD')
-    curation_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    curation_time = models.DateTimeField(auto_now_add=True)
+    curator = models.ForeignKey(Profile, on_delete=models.CASCADE)
     def __str__(self):
         return str(self.title)
 
@@ -53,9 +60,4 @@ class Question(models.Model):
 
     def __str__(self):
         return str(self.title)
-class Profile(models.Model):
-    type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.CharField(max_length=100,default=" ")
-    def __str__(self):
-        return str(self.user.username)
+

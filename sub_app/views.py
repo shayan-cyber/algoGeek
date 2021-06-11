@@ -3,11 +3,12 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
 import requests
 import json
-from . models import Contest, Question,DsAlgoTopics
+from . models import Contest, Profile, Question,DsAlgoTopics
 import uuid
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 
 # print(uuid.uuid4())
 RUN_URL = "https://api.hackerearth.com/v3/code/run/"
@@ -17,7 +18,7 @@ def home(request):
    
     return render(request,"home.html")
 
-
+@login_required(login_url='/register')
 def run_code(request):
     if request.is_ajax():
         code_ = request.POST['code_']
@@ -46,7 +47,7 @@ def run_code(request):
         return HttpResponseForbidden
 
 
-
+@login_required(login_url='/register')
 def submit_code(request,pk):
     question =Question.objects.filter(pk=pk)[0]
     if request.is_ajax():
@@ -105,6 +106,8 @@ def submit_code(request,pk):
 
         return JsonResponse(msg,safe=False)
 
+
+@login_required(login_url='/register')
 def problem_setting(request, pk):
     contest = Contest.objects.filter(pk =pk)[0]
     dsalgos = DsAlgoTopics.objects.all()
@@ -140,12 +143,17 @@ def problem_setting(request, pk):
     }
     return render(request,"problem_setting.html",context)
 
+
+
+@login_required(login_url='/register')
 def contests(request):
     questions = Question.objects.all()
     context ={
         'ques':questions
     }
     return render(request,"contests.html",context)
+
+@login_required(login_url='/register')
 def problem(request, pk):
     question = Question.objects.filter(pk =pk)[0]
     context = {
@@ -153,8 +161,11 @@ def problem(request, pk):
     }
     return render(request,"problem.html", context)
 
+
+@login_required(login_url='/register')
 def add_contest(request):
     if request.method =="POST":
+
         title= request.POST.get('title','')
         start_time = request.POST.get('start_time','')
         end_time = request.POST.get('end_time', '')
@@ -168,7 +179,14 @@ def add_contest(request):
         print(title)
         print(difficulty)
         print(unique_id)
-        contest_ = Contest(title =title, start_time=start_time, end_time = end_time, unique_id = unique_id, difficulty = difficulty)
+
+        prof = Profile.objects.filter(user=request.user)[0]
+        
+
+
+
+
+        contest_ = Contest(title =title, start_time=start_time, end_time = end_time, unique_id = unique_id, difficulty = difficulty,curator = prof)
         contest_.save()
         search_contest = Contest.objects.filter(unique_id= unique_id)[0]
         print(search_contest.title)
@@ -179,8 +197,85 @@ def add_contest(request):
 
     else:
         raise Http404()
+
+@login_required(login_url='/register')
+def edit_contest(request, pk):
+    if request.method =="POST":
+        title= request.POST.get('title_edit','')
+        start_time = request.POST.get('start_time_edit','')
+        end_time = request.POST.get('end_time_edit', '')
+        difficulty = request.POST.get('difficulty_edit', '')
+        
+        start_time = start_time.replace("T", " ")
+        end_time = end_time.replace("T"," ")
+        contest_ = Contest.objects.filter(pk=pk)[0]
+        prof_ = contest_.curator
+        print(title)
+        print(start_time)
+        print(end_time)
+        
+        contest_.title = title
+        contest_.start_time = start_time
+        contest_.end_time = end_time
+        contest_.difficulty = difficulty
+        contest_.save()
+        return redirect('/profile/'+ str(prof_.pk))
+    else:
+        raise Http404()
+@login_required(login_url='/register')
+def delete_contest(request, pk):
+    contest_ = Contest.objects.filter(pk=pk)[0]
+    prof_ = contest_.curator
+    if request.user == prof_.user:
+        contest_.delete()
+    return redirect('/profile/'+ str(prof_.pk))
+@login_required(login_url='/register')
+def edit_problem(request,pk):
+    problem_ = Question.objects.filter(pk=pk)[0]
+    contest_ =problem_.contest_of.pk
+    if request.method == "POST":
+        test_case = request.POST.get('test_cases_edit','')
+        input_case = request.POST.get('input_cases_edit','')
+        description = request.POST.get('description_edit','')
+        time_limit = request.POST.get('time_limit_edit','')
+        difficulty = request.POST.get('difficulty_edit', '')
+        problem_id = request.POST.get('problem_id_edit','')
+        # contest_uid = request.POST.get('contest_uid','')
+        title = request.POST.get('title_edit','')
+        category = request.POST.get('category_edit','')
+        dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
+
+        problem_.test_cases =test_case
+        problem_.input_cases = input_case
+        problem_.description =description
+        problem_.time_limit =time_limit
+        problem_.dfficulty =difficulty
+        problem_.title =title
+        problem_.category =dsalgo
+        problem_.save()
+        
+        return redirect("/problem_setting/"+str(contest_))
+    else:
+        raise Http404()
+
+       
+    
+
+
+
+@login_required(login_url='/register')
 def profile_visit(request,pk):
-    return render(request, "profile.html")
+    prof_ = Profile.objects.filter(pk=pk)[0]
+    if prof_.type == "CU":
+        contests_ = Contest.objects.filter(curator = prof_).order_by("-curation_time")
+        context={
+            'contests':contests_,
+            'prof':prof_
+        }
+        # print(prof_)
+        # print(contests_)
+
+    return render(request, "profile.html",context)
 # def add_problem(request):
 #     return render(request, "problem_setting.html")
 

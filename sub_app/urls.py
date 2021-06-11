@@ -11,7 +11,12 @@ urlpatterns =[
     path("add_contest", views.add_contest, name="add_contest"),
     path('register', views.register, name='register'),
     path('signUp', views.signUp, name="signUp"),
-    path('log_in',views.log_in, name="log_in")
+    path('log_in',views.log_in, name="log_in"),
+    path("edit_contest/<int:pk>", views.edit_contest, name='edit_contest'),
+    path('delete_contest/<int:pk>', views.delete_contest, name="delete_contest"),
+    path('edit_problem/<int:pk>', views.edit_problem, name="edit_problem"),
+
+
     
 
 ]
