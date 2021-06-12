@@ -1,0 +1,416 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Contest</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+</head>
+<style>
+    body {
+        background-color: #f3f7f7;
+    }
+
+    #problems {
+        box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        border-radius: 0rem;
+        margin-top: 1rem;
+        font-family: OpenSans, Arial, Helvetica, sans-serif;
+        font-style: normal;
+        padding-top: 0.8rem;
+        padding-bottom: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    #problems:hover {
+        background-color: #f3f7f7;
+    }
+
+    #solve {
+        border-radius: 0rem;
+        margin-left: 3rem;
+        margin-top: -1rem;
+    }
+
+    hr {
+        width: 85%;
+        opacity: 0.1;
+
+
+    }
+
+
+    .card {
+        box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+</head>
+
+<body>
+    <!-- Navbar start -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">algoShush</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li>
+                </ul>
+                <ul style="margin-right: 6rem !important;" class="navbar-nav me-2 mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a style="font-weight: 650; font-size: larger;" class="nav-link dropdown-toggle" href="#"
+                            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg style="margin-right: 0.3rem;" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                                <path fill-rule="evenodd"
+                                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                            </svg>
+
+                            {{request.user.username}}
+                        </a>
+                        <ul class="dropdown-menu " aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'profile' request.user.profile.pk %}">Profile</a>
+                            </li>
+                            <center>
+                                <hr>
+                            </center>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <center>
+                                <hr>
+                            </center>
+                            <li>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                </ul>
+                <!-- <form class="d-flex">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-light" type="submit">Search</button>
+          </form> -->
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar end -->
+
+
+    <!-- title area start -->
+    <div style="background-color: #ffffff; padding: 1.1rem 1.1rem 1rem" class="container-fluid">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Contests</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{contest.title}}</li>
+                            <p style="display: none;" id="pk">{{contest.pk}}</p>
+
+                            {% if end_time %}
+                            <p style="display: none;" id="end_time">{{end_time}}</p>
+                            {% elif start_time %}
+
+                            <p style="display: none;" id="end_time">{{start_time}}</p>
+                            {% endif %}
+
+
+                        </ol>
+                    </nav>
+
+                    <h1 style="
+        margin-top: -0.6rem;
+        font-family: OpenSans, Arial, Helvetica, sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        color: #0e141e;
+      ">
+                        {{contest.title}}
+                    </h1>
+
+                </div>
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-3">
+
+                    {% if end_time %}
+
+                    <div class="row">
+                        <p style="margin-right: -7rem;
+                            " class="col-sm-6">
+                            <svg style="margin-top: 0.7rem; " xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16">
+                                <path
+                                    d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z" />
+                                <path
+                                    d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1h-3zm1.038 3.018a6.093 6.093 0 0 1 .924 0 6 6 0 1 1-.924 0zM0 3.5c0 .753.333 1.429.86 1.887A8.035 8.035 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5zM13.5 1c-.753 0-1.429.333-1.887.86a8.035 8.035 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1z" />
+                            </svg>
+
+                        </p>
+                        
+                       
+                        <span style="padding-top: 1rem;
+                        padding-bottom: 0rem;" class="col-sm-6 badge bg-info text-dark">
+                        <p style="font-size: medium; font-weight: 600; margin-bottom: -1rem;" id="demo">Loading..
+                        </p>
+                        </span>
+                        
+                          
+                        
+
+                    </div>
+                    
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+    <!-- title area end -->
+
+
+
+
+
+
+
+
+
+    {% if end_time %}
+    <div class="container">
+        <!-- problems start -->
+
+        <br>
+
+        <br>
+        <h5 style="font-weight: 400;">Problems</h5>
+
+        {% for i in questions %}
+        <div id="problems" class="card mt-4">
+            <div class="card-body">
+                <h5 style="font-weight: 400; color: #0e141e; font-size: 21px" class="card-title">
+                    {{i.title|truncatechars:25}}
+                </h5>
+                <div class="row">
+                    <div class="col-md-9">
+                        <p style="font-weight: 100; color: #738f93; font-size: 14px" class="card-text">
+                            <strong style="color: #0d6efd">{{i.get_difficulty_display }},</strong>
+                            <!-- <strong id="q_desc">{{i.description|truncatechars:150}}</strong> -->
+                            <strong style="margin-left: 2rem;">Score : {{i.score}}</strong>
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-1">
+                                <a style="
+            text-decoration: none;
+            cursor: pointer;
+            padding-bottom: 0.2rem;
+          " href="#"><img style="margin-top: -0.6rem" src="https://img.icons8.com/plumpy/24/000000/star--v1.png" /></a>
+                            </div>
+                            <div class="col-md-2"></div>
+                            <div class="col-md-7">
+                                <a style="
+            font-family: SourceCodePro, monaco, Courier, monospace;
+            font-size: 1rem;
+            font-style: normal;
+            font-weight: 550;
+            line-height: 17px;
+          " id="solve" href="{% url 'problem' i.pk %}" class="btn btn-outline-primary btn-lg">View </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+
+
+        <!-- problems end -->
+
+    </div>
+
+
+
+
+    {% elif start_time %}
+    <div class="container">
+        <div class="row mt-5">
+
+            <center>
+                <h4>The Contest Has Not Started Yet</h4>
+            </center>
+            <center>
+                <p>Just Wait A while</p>
+            </center>
+            <div class="col-4"></div>
+            <div class="col-4">
+                <div class="row">
+
+                    <p  style="margin-right: -7rem;" class="col-sm-6">
+                        <svg style="margin-top: 0.7rem; " xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                            fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16">
+                            <path
+                                d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z" />
+                            <path
+                                d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1h-3zm1.038 3.018a6.093 6.093 0 0 1 .924 0 6 6 0 1 1-.924 0zM0 3.5c0 .753.333 1.429.86 1.887A8.035 8.035 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5zM13.5 1c-.753 0-1.429.333-1.887.86a8.035 8.035 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1z" />
+                        </svg>
+    
+                    </p>
+                    <span style="padding-top: 1rem;
+                    padding-bottom: 0rem;"  class="col-sm-6 badge bg-info text-dark">
+                        <p style="font-size: medium; font-weight: 600; margin-bottom: -1rem;" id="wait">Loading..
+                        </p>
+                    </span>
+                </div>
+                
+            </div>
+            <div class="col-4"></div>
+
+        </div>
+    </div>
+    {% endif %}
+
+
+
+
+<!-- scripts -->
+    
+    {% if end_time %}
+    <script>
+
+        // Set the date we're counting down to
+        var countDownDate = new Date(document.getElementById("end_time").innerHTML).getTime();
+        console.log(countDownDate);
+
+        var da_ = new Date();
+        var n = da_.getTimezoneOffset();
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+            console.log(now);
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now + n*60*1000;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+
+              
+        
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("demo").innerHTML = "EXPIRED";
+                // document.getElementById("wait").innerHTML = "<a class='btn btn-primary' href='#'' role='button'>Link</a>"
+            }
+        }, 1000);
+    </script>
+    {% elif start_time %}
+    <script>
+
+        // Set the date we're counting down to
+        var countDownDate = new Date(document.getElementById("end_time").innerHTML).getTime();
+        console.log(document.getElementById("end_time").innerHTML);
+        console.log(countDownDate);
+
+       var  pk = document.getElementById("pk").innerHTML 
+        var da_ = new Date();
+        var n = da_.getTimezoneOffset();
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+            console.log(now);
+
+            
+            console.log(n);
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now  + n*60*1000;
+            console.log(distance);
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            
+
+                document.getElementById("wait").innerHTML = days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+        
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                // document.getElementById("demo").innerHTML = "EXPIRED";
+                document.getElementById("wait").innerHTML = "<a  class='btn btn-primary mb-2' href='/view_contest/" +pk + "'"+  "role='button'>Link</a>";
+                document.getElementById('wait').style.marginBottom = "0rem";
+            }
+        }, 1000);
+    </script>
+    {% endif %}
+        
+    
+
+
+</body>
+
+</html>

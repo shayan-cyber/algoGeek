@@ -1,3 +1,4 @@
+import datetime
 from django.http.response import Http404
 from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
@@ -9,6 +10,10 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from datetime import date,datetime
+import pytz
+
+# import datetime
 
 # print(uuid.uuid4())
 RUN_URL = "https://api.hackerearth.com/v3/code/run/"
@@ -120,6 +125,7 @@ def problem_setting(request, pk):
     if request.method =='POST':
         test_case = request.POST.get('test_cases','')
         input_case = request.POST.get('input_cases','')
+        score = request.POST.get('score','')
         description = request.POST.get('description','')
         time_limit = request.POST.get('time_limit','')
         difficulty = request.POST.get('difficulty', '')
@@ -132,7 +138,7 @@ def problem_setting(request, pk):
         
         contest =Contest.objects.filter(pk = contest_id, unique_id = contest_uid)[0]
         print(contest)
-        question = Question(title=title, description=description, time_limit=time_limit, test_cases = test_case, input_cases= input_case,difficulty=difficulty, category=dsalgo,contest_of =contest)
+        question = Question(title=title, description=description, score=score,time_limit=time_limit, test_cases = test_case, input_cases= input_case,difficulty=difficulty, category=dsalgo,contest_of =contest)
 
         question.save()
 
@@ -147,9 +153,24 @@ def problem_setting(request, pk):
 
 @login_required(login_url='/register')
 def contests(request):
-    questions = Question.objects.all()
+    contests_ = Contest.objects.all().order_by('-curation_time')
+
+
+    for contest_ in contests_:
+        if contest_.status =="AC":
+            now = datetime.now()
+            now = pytz.utc.localize(now)
+           
+            if now > contest_.end_time:
+                print("done")
+                contest_.status = "IA"
+                contest_.save()
+                print(contest_.status)
+    active_contests = Contest.objects.filter(status = "AC").order_by('-curation_time')
+    previous_contests = Contest.objects.filter(status ="IA").order_by("-curation_time")
     context ={
-        'ques':questions
+        'active_contests':active_contests,
+        'previous_contests': previous_contests,
     }
     return render(request,"contests.html",context)
 
@@ -161,6 +182,36 @@ def problem(request, pk):
     }
     return render(request,"problem.html", context)
 
+
+
+@login_required(login_url='/register')
+def view_contest(request,pk):
+    contest_ = Contest.objects.filter(pk =pk)[0]
+    questions_ = Question.objects.filter(contest_of = contest_)
+    end_time_ = str(contest_.end_time)
+    now = datetime.now()
+    now = pytz.utc.localize(now)
+    # print(end_time_)
+
+
+    if contest_.start_time > now:
+        start_time = str(contest_.start_time)
+        context = {
+            'contest' : contest_,
+            'questions': questions_,
+            'start_time':start_time,
+            
+        }
+    else:
+        context = {
+        'contest' : contest_,
+        'questions': questions_,
+        'end_time':end_time_,
+        }
+
+
+    
+    return render(request, "view_contest.html", context)
 
 @login_required(login_url='/register')
 def add_contest(request):
@@ -237,6 +288,7 @@ def edit_problem(request,pk):
         test_case = request.POST.get('test_cases_edit','')
         input_case = request.POST.get('input_cases_edit','')
         description = request.POST.get('description_edit','')
+        score = request.POST.get('score_edit','')
         time_limit = request.POST.get('time_limit_edit','')
         difficulty = request.POST.get('difficulty_edit', '')
         problem_id = request.POST.get('problem_id_edit','')
@@ -248,6 +300,7 @@ def edit_problem(request,pk):
         problem_.test_cases =test_case
         problem_.input_cases = input_case
         problem_.description =description
+        problem_.score = score
         problem_.time_limit =time_limit
         problem_.dfficulty =difficulty
         problem_.title =title

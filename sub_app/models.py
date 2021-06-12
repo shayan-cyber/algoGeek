@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from requests.api import request
 DIFFICULTY_CHOICES =[
     ('ES', 'Easy'),
     ('MD', 'Medium'),
@@ -20,7 +21,10 @@ TYPE_OF_PROFILE =[
     ('CU','Curator'),
     ('LR','Learner')
 ]
-
+STATUS_CONTEST = [
+    ('AC', 'Active'),
+    ('IA', 'Inactive')
+]
 # Create your models here.
 class Profile(models.Model):
     type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
@@ -37,9 +41,15 @@ class Contest(models.Model):
     difficulty = models.CharField(max_length=2,choices=DIFFICULTY_CHOICES, default='MD')
     curation_time = models.DateTimeField(auto_now_add=True)
     curator = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    status = models.CharField(max_length=2, choices=STATUS_CONTEST, default="AC")
     def __str__(self):
         return str(self.title)
-
+class ScoreCard(models.Model):
+    _contest = models.ForeignKey(Contest, on_delete=models.CASCADE,blank=True, null=True)
+    prof = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField(default=0)
+    def __str__(self):
+        return str(self._contest) + " from " + str(self.prof)
     
 class DsAlgoTopics(models.Model):
     type = models.CharField(max_length=2, choices=DSALGO_TYPES,default='DS')
@@ -56,6 +66,7 @@ class Question(models.Model):
     difficulty = models.CharField(max_length=2,choices=DIFFICULTY_CHOICES, default='MD')
     category = models.ForeignKey(DsAlgoTopics, on_delete=models.CASCADE, null=True,blank=True)
     contest_of = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True,blank=True) 
+    score = models.IntegerField(default=0)
     
 
     def __str__(self):
