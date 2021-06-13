@@ -44,12 +44,7 @@ class Contest(models.Model):
     status = models.CharField(max_length=2, choices=STATUS_CONTEST, default="AC")
     def __str__(self):
         return str(self.title)
-class ScoreCard(models.Model):
-    _contest = models.ForeignKey(Contest, on_delete=models.CASCADE,blank=True, null=True)
-    prof = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
-    score = models.IntegerField(default=0)
-    def __str__(self):
-        return str(self._contest) + " from " + str(self.prof)
+
     
 class DsAlgoTopics(models.Model):
     type = models.CharField(max_length=2, choices=DSALGO_TYPES,default='DS')
@@ -71,4 +66,10 @@ class Question(models.Model):
 
     def __str__(self):
         return str(self.title)
-
+class ScoreCard(models.Model):
+    _contest = models.ForeignKey(Contest, on_delete=models.CASCADE,blank=True, null=True)
+    prof = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField(default=0)
+    _ques = models.ManyToManyField(Question, blank=True)
+    def __str__(self):
+        return str(self._contest) + " from " + str(self.prof)

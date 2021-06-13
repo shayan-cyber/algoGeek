@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
 import requests
 import json
-from . models import Contest, Profile, Question,DsAlgoTopics
+from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard
 import uuid
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -34,7 +34,7 @@ def run_code(request):
             'async':0,
             'source':code_,
             'lang':lang,
-            'time_limit':5,
+            'time_limit':10,
             'memory_limit': 262144,
 
         }
@@ -55,6 +55,8 @@ def run_code(request):
 @login_required(login_url='/register')
 def submit_code(request,pk):
     question =Question.objects.filter(pk=pk)[0]
+    now = datetime.now()
+    now = pytz.utc.localize(now)
     if request.is_ajax():
         code_ = request.POST['code_']
         lang = request.POST['lang']
@@ -64,7 +66,7 @@ def submit_code(request,pk):
             'async':0,
             'source':code_,
             'lang':lang,
-            'time_limit':5,
+            'time_limit':question.time_limit,
             'memory_limit': 262144,
 
         }
@@ -82,6 +84,7 @@ def submit_code(request,pk):
         
         if resp_json['run_status']['status']=='AC':
             output_ = resp_json['run_status']['output'] 
+            time_limit_reached = resp_json['run_status']['time_used']
             print(str(output_))
             # print(str(question.test_cases))
             string = question.test_cases
@@ -91,16 +94,49 @@ def submit_code(request,pk):
 
 
             if string.splitlines() == output_.splitlines():
-                print("passed")
+                print("test cases passed")
+                print(resp_json)
+                # if float(time_limit_reached) <= float(question.time_limit):
+
+
+
+
+                # checking scorecard
+                scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
+                scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])[0]
+                print(scoredcard_check_2)
+                if scorecard_check:
+                    print("already got marks")
+                elif scoredcard_check_2:
+                    if question.contest_of.end_time > now:
+                        scoredcard_check_2._ques.add(question)
+                        scoredcard_check_2.score = scoredcard_check_2.score + question.score
+                        scoredcard_check_2.save()
+
+
                 msg ={
                     'message':"Test Cases Passed",
                     'output': resp_json['run_status']['output']
                 }
+                # else:
+                #     msg ={
+                #         'message':"Time Limit Exceeded",
+                #         'output': resp_json['run_status']['output']
+                #     }
+
             else:
                 msg= {
                     'message':"Test Cases Not Passed",
                     'output':resp_json['run_status']['output']
                 }
+
+
+        elif resp_json['run_status']['status']=='TLE':
+            msg = {
+                        'message':"Time Limit Exceeded",
+                       'output': resp_json['run_status']['output']
+                     }
+
         else:
             print("Compilation Error")
             print(resp_json)
@@ -176,11 +212,19 @@ def contests(request):
 
 @login_required(login_url='/register')
 def problem(request, pk):
+    now = datetime.now()
+    now = pytz.utc.localize(now)
+    
     question = Question.objects.filter(pk =pk)[0]
-    context = {
-        'question':question,
-    }
-    return render(request,"problem.html", context)
+    if question.contest_of.start_time < now:
+        end_time= str(question.contest_of.end_time)
+        context = {
+            'question':question,
+            'end_time':end_time,
+        }
+        return render(request,"problem.html", context)
+    else:
+        raise Http404()
 
 
 
@@ -192,22 +236,41 @@ def view_contest(request,pk):
     now = datetime.now()
     now = pytz.utc.localize(now)
     # print(end_time_)
+    score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
+    
+    print(score_cards)
+
+
+    
 
 
     if contest_.start_time > now:
+        
         start_time = str(contest_.start_time)
         context = {
             'contest' : contest_,
             'questions': questions_,
             'start_time':start_time,
             
+            
         }
     else:
+        if contest_.status == "AC":
+            scorecard_check = ScoreCard.objects.filter(_contest = contest_, prof = Profile.objects.filter(user = request.user)[0])
+            if scorecard_check:
+                print("scorecard exists")
+            else:
+                score_card = ScoreCard(_contest = contest_, prof = Profile.objects.filter(user = request.user)[0])
+                score_card.save()
+                print(score_card)
+            
         context = {
         'contest' : contest_,
         'questions': questions_,
         'end_time':end_time_,
+        'score_cards':score_cards,
         }
+
 
 
     
@@ -231,20 +294,28 @@ def add_contest(request):
         print(difficulty)
         print(unique_id)
 
+
         prof = Profile.objects.filter(user=request.user)[0]
         
 
 
 
+        if start_time < end_time:
+            print("correct")
 
-        contest_ = Contest(title =title, start_time=start_time, end_time = end_time, unique_id = unique_id, difficulty = difficulty,curator = prof)
-        contest_.save()
-        search_contest = Contest.objects.filter(unique_id= unique_id)[0]
-        print(search_contest.title)
-        context={
-            'contest':search_contest,
-        }
-        return redirect("/problem_setting/" + str(search_contest.pk))
+
+
+            contest_ = Contest(title =title, start_time=start_time, end_time = end_time, unique_id = unique_id, difficulty = difficulty,curator = prof)
+            contest_.save()
+            search_contest = Contest.objects.filter(unique_id= unique_id)[0]
+            print(search_contest.title)
+            context={
+                'contest':search_contest,
+            }
+            return redirect("/problem_setting/" + str(search_contest.pk))
+        else:
+            messages.warning(request, "Start Time Must Be Less Than End Time !!")
+            return redirect("/profile/"+ str(prof.pk))
 
     else:
         raise Http404()
@@ -264,13 +335,18 @@ def edit_contest(request, pk):
         print(title)
         print(start_time)
         print(end_time)
+        if start_time < end_time:
         
-        contest_.title = title
-        contest_.start_time = start_time
-        contest_.end_time = end_time
-        contest_.difficulty = difficulty
-        contest_.save()
-        return redirect('/profile/'+ str(prof_.pk))
+            contest_.title = title
+            contest_.start_time = start_time
+            contest_.end_time = end_time
+            contest_.difficulty = difficulty
+            contest_.save()
+            return redirect('/profile/'+ str(prof_.pk))
+        else:
+            messages.warning(request, "Start Time Must Be Less Than End Time !!")
+            return redirect("/profile/"+ str(prof_.pk))
+
     else:
         raise Http404()
 @login_required(login_url='/register')

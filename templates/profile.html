@@ -72,6 +72,23 @@
   </nav>
   <!-- Navbar end -->
 
+
+  <!-- messages start -->
+
+
+  <div class="container mt-4 mb-4">
+
+    {% for msg in messages %}
+    <div class="alert alert-{{msg.tags}} alert-dismissible fade show" role="alert">
+        <strong>{{msg}} !!</strong>
+        
+    </div>
+    {% endfor %}
+
+  </div>
+
+
+  <!-- messages end -->
   <div class="container">
 
 
