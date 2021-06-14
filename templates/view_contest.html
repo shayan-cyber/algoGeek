@@ -281,14 +281,36 @@
                                     <div class="row">
                                         <div class="col-md-1"></div>
                                         <div class="col-md-1">
+                                            <div style="display: none;">
+                                                <input style="display: none;" type="text" value="{{ csrf_token }}" name="token"></div>
+                                            
                                             <a style="
             text-decoration: none;
             cursor: pointer;
             padding-bottom: 0.2rem;
-          " href="#"><img style="margin-top: -0.6rem" src="https://img.icons8.com/plumpy/24/000000/star--v1.png" /></a>
+          " href="#" type="button" onclick="return addBookmark({{i.pk}})"><img style="margin-top: -0.6rem" src="https://img.icons8.com/plumpy/24/000000/star--v1.png" /></a>
                                         </div>
                                         <div class="col-md-2"></div>
                                         <div class="col-md-7">
+
+
+                                            {% if i in ls %}
+                                            <a style="
+            font-family: SourceCodePro, monaco, Courier, monospace;
+            font-size: 1rem;
+            font-style: normal;
+            font-weight: 550;
+            line-height: 17px;
+          " id="solve" href="{% url 'problem' i.pk %}" class="btn btn-success btn-lg"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                                                    <path
+                                                        d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                                                </svg> Solved </a>
+                                            {% else %}
+
                                             <a style="
             font-family: SourceCodePro, monaco, Courier, monospace;
             font-size: 1rem;
@@ -296,6 +318,11 @@
             font-weight: 550;
             line-height: 17px;
           " id="solve" href="{% url 'problem' i.pk %}" class="btn btn-outline-primary btn-lg">View </a>
+                                            {% endif %}
+
+
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -355,43 +382,46 @@
 
             <div style="display: none;" id="leaderboard">
                 {% for x in score_cards %}
-                <div id="problems" class="card mt-4">
-                    <div class="card-body">
+                <div id="problems" class="card mt-1">
+                    <div style="padding-top: 0; padding-bottom: 0;" class="card-body">
 
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="row">
                                     <div style="width: 20%;" class="col-6">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
-                                            <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
-                                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                                          </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+                                            fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                                            <path
+                                                d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z" />
+                                            <path
+                                                d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                                        </svg>
                                     </div>
-                                    <div  class="col-6">
+                                    <div class="col-6">
                                         <p style="font-weight: 100; color: #738f93; font-size: 14px" class="card-text">
 
                                             {{x.prof.user.username}}
                                         </p>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div class="col-md-6">
 
-                                
+
                             </div>
                             <div class="col-md-3">
 
                                 <h5>Score : <strong style="color: 
                                     #0d6efd;"> {{x.score}}</strong></h5>
-                                
+
                             </div>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            
+
         </div>
 
     </div>
@@ -516,7 +546,53 @@
     {% endif %}
 
 
+<!-- ajax call for bookmarks -->
+<script>
+    function addBookmark(param){
+        console.log(param);
+        $.ajax({
+            type:"POST",
+            url:"/add_to_bookmark/"+ param,
+            data:{
+                pk:param,
+                dataType: "json",
+                csrfmiddlewaretoken:$(":input[name='token']").val(),
+            },
+            success:function(response){
+                console.log(response);
+            }
 
+        })
+    //     $.ajax({
+    //   type: "POST",
+    //   url: "/run_code",
+    //   data: {
+    //     code_: editor.getValue(),
+    //     Input: document.getElementById("Input_").value,
+    //     lang: $("#lang_select").val(),
+    //     dataType: "json",
+    //     csrfmiddlewaretoken: $(":input[name='token']").val(),
+    //   },
+    //   success: function (response) {
+    //     console.log(response);
+        
+    //     if(response.run_status.status == 'AC'){
+    //       document.getElementById("test_output_div").style.display = "block";
+    //       document.getElementById("test_output").innerHTML =
+    //       response.run_status.output_html;
+    //       document.getElementById("compilation_error_div").style.display = "none";
+    //       document.getElementById("compilation_error_alert").style.display = "none";
+    //       document.getElementById("submit_div").style.display = "none";
+    //       document.getElementById("alert").style.display = "none";
+    //       console.log("AC");
+
+
+          
+          
+
+
+    }
+</script>
 
 </body>
 

@@ -163,8 +163,8 @@
     {% for i in ques %}
     <div style="width: 80%" class="alert alert-info" role="alert">
       <div class="row">
-        <div class="col-9">
-          <span><strong>{{forloop.counter}}.</strong> </span>{{i.title}}
+        <div class="col-6">
+          <span><strong>{{forloop.counter}}.</strong> </span>{{i.title|truncatechars:15}}
         </div>
         <div class="col-3">
           <a style="border-radius: 0.1rem" href="#" class="btn btn-outline-primary" data-bs-toggle="modal"
@@ -177,6 +177,14 @@
                 d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
             </svg>
           </a>
+        </div>
+        <div class="col-3">
+          <a style="border-radius: 0.1rem" href="{% url 'problem' i.pk %}" class="btn btn-primary" >Test
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning" viewBox="0 0 16 16">
+              <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z"/>
+            </svg>
+          </a>
+
         </div>
       </div>
     </div>

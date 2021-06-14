@@ -1,0 +1,680 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>problem_w_c</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="{% static 'ace-builds-master/src/ace.js' %}"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script
+      src="{% static 'ace-builds-master/src/ext-statusbar.js' %}"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script
+      src="{% static 'ace-builds-master/src/ext-language_tools.js' %}"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script
+      src="{% static 'ace-builds-master/src-noconflict/ext-language_tools.js' %}"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script
+      src="{% static 'ace-builds-master/src-noconflict/ace.js' %}"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script
+      src="{% static 'myjs.js' %}"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+  </head>
+  <style type="text/css" media="screen">
+    #editor {
+      height: 60vh;
+    }
+
+    body {
+      background-color: #f3f7f7;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    #question_card, #question_card_description {
+      box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      padding: 2rem 2rem 2rem;
+      background: #ffffff;
+    }
+    .nav-link.active{
+      border-color: #ffffff !important;
+    }
+    
+  </style>
+
+  <body>
+    <!-- loading svg files start -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+      <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+      </symbol>
+      <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+          d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+        />
+      </symbol>
+      <symbol
+        id="exclamation-triangle-fill"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+        />
+      </symbol>
+    </svg>
+    <!-- loading svg files end -->
+    <!-- Navbar start -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">algoShush</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Dropdown
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link disabled"
+                href="#"
+                tabindex="-1"
+                aria-disabled="true"
+                >Disabled</a
+              >
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-light" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <!-- Navbar end -->
+
+
+    
+    {% comment %}
+       <!-- title area start -->
+    <div
+    style="background-color: #ffffff; padding: 1.1rem 1.1rem 1rem"
+    class="container-fluid"
+  >
+    <div class="container">
+      <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Library</li>
+        </ol>
+      </nav>
+
+      <h1
+        style="
+          margin-top: -0.8rem;
+          font-family: OpenSans, Arial, Helvetica, sans-serif;
+          font-weight: 700;
+          font-size: 26px;
+          color: #0e141e;
+        "
+      >
+        {{question.title}}
+      </h1>
+    </div>
+  </div>
+  <!-- title area end -->
+    {% endcomment %}
+      
+   
+
+    <!-- title area start -->
+    <div style="background-color: #ffffff; padding: 1.1rem 1.1rem 1rem" class="container-fluid">
+      <div class="container">
+          <div class="row">
+              <div class="col-sm-3">
+                  <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+                      <ol class="breadcrumb">
+                          <li class="breadcrumb-item"><a href="#">Home</a></li>
+                         
+                          <li class="breadcrumb-item active" aria-current="page">{{question.title}}</li>
+                          
+
+                         
+
+
+                      </ol>
+                  </nav>
+
+                  <h1 style="
+      margin-top: -0.6rem;
+      font-family: OpenSans, Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 26px;
+      color: #0e141e;
+    ">
+                      {{question.title}}
+                  </h1>
+
+              </div>
+              <div class="col-sm-6">
+
+              </div>
+              <div class="col-sm-3">
+
+             
+
+                  
+                  
+
+                  
+
+              </div>
+
+          </div>
+
+
+
+      </div>
+  </div>
+  <!-- title area end -->
+
+
+
+
+
+
+
+
+
+
+    
+    <input
+      id="que_pk"
+      type="text"
+      style="display: none"
+      value="{{question.pk}}"
+    />
+
+
+
+    <!-- question description start -->
+
+    <div class="container mt-5">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a style="color: #0e141e;" class="nav-link active" aria-current="page" href="#">Active</a>
+        </li>
+        <li class="nav-item">
+          <a style="color: #0e141e;" class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a style="color: #0e141e;" class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a style="color: #0e141e;" class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+      <div id="question_card_description" class="container description">
+        {{question.description}}
+      </div>
+     
+    </div>
+
+    <!-- question description end -->
+
+
+
+
+
+
+    <!-- editor div start -->
+
+    <div style="margin-top: 5rem" class="container">
+      <div
+        style="
+          padding-top: 0.2rem;
+          padding-left: 0;
+          padding-right: 0;
+          padding-bottom: 1.2rem;
+          background: #f3f7f7;
+
+        "
+        id="question_card"
+        class="container"
+      >
+        <!-- select lang start -->
+        <div class="container mt-2 mb-3">
+          <div class="row">
+            <div class="col-4">
+              <label class="mb-1" for="#lang_select"
+                ><small><strong>Language :</strong></small></label
+              >
+              <select
+                id="lang_select"
+                class="form-select form-select-sm"
+                aria-label=".form-select-sm example"
+              >
+                <option value="PYTHON">Python</option>
+                <option value="CPP14" selected>C++</option>
+                <option value="C">C</option>
+                <option value="JAVASCRIPT">Javascript</option>
+                <option value="JAVA">Java</option>
+                <option value="C#">C#</option>
+              </select>
+            </div>
+
+            <div class="col-5"></div>
+            <div class="col-3">
+              <label class="mb-1" for="#theme_select"
+                ><small><strong>Theme :</strong></small></label
+              >
+              <select
+                class="form-select form-select-sm"
+                aria-label=".form-select-sm example"
+                id="theme_select"
+              >
+                <option value="Light">Light</option>
+                <option value="Monokai" selected>Monokai</option>
+                <option value="Solarised Light">Solarised Light</option>
+                <option value="Twilight">Twilight</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- select lang end -->
+
+        <!-- Code Editor start -->
+        <div class="container">
+          <div id="editor"></div>
+        </div>
+
+        <!-- Code Editor end -->
+      </div>
+
+      <div class="row">
+        <div class="mb-3 col-6 mt-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            ><strong>Input</strong></label
+          >
+          <textarea class="form-control" id="Input_" rows="3"></textarea>
+        </div>
+
+        <div style="display: none" class="col-6 mt-3" id="test_output_div">
+          <label for="#test_output">Results</label>
+          <div
+            style="
+              height: 100%;
+              background-color: wheat;
+              padding: 1rem 1rem 1rem;
+            "
+            id="test_output"
+          ></div>
+        </div>
+        <div style="display: none" class="col-6 mt-3" id="submit_div">
+          <br /><br />
+          <div
+            class="alert alert-success d-flex align-items-center"
+            role="alert"
+            id="alert"
+            style="display: none"
+          >
+            <svg
+              class="bi flex-shrink-0 me-2"
+              width="24"
+              height="24"
+              role="img"
+              aria-label="Success:"
+            >
+              <use xlink:href="#check-circle-fill" />
+            </svg>
+            <div id="message"></div>
+          </div>
+        </div>
+        <div
+          style="display: none"
+          class="col-md-6 mt-3"
+          id="compilation_error_div"
+        >
+          <div
+            style="display: none"
+            id="compilation_error_alert"
+            class="alert alert-danger d-flex align-items-center"
+            role="alert"
+          >
+            <svg
+              class="bi flex-shrink-0 me-2"
+              width="24"
+              height="24"
+              role="img"
+              aria-label="Danger:"
+            >
+              <use xlink:href="#exclamation-triangle-fill" />
+            </svg>
+            <div id="compilation_error_alert_message"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- button start -->
+      <div class="row mt-5">
+        <div class="col-6">
+          <center>
+            <button class="btn btn-outline-primary" id="test_code">
+              Test Code
+            </button>
+          </center>
+        </div>
+        <div class="col-6">
+          <center>
+            <button class="btn btn-outline-success" id="submit_code">
+              Submit Code
+            </button>
+          </center>
+        </div>
+      </div>
+      <!-- button end -->
+      <br /><br />
+    </div>
+
+    <input
+      style="display: none"
+      name="token"
+      type="text"
+      value="{{csrf_token}}"
+    />
+    <script>
+      document.getElementById("question_card_description").innerHTML = document.getElementById("question_card_description").innerText
+      // console.log(document.getElementById("question_card_description").innerHTML);
+    </script>
+   <!-- ajax calls description -->
+<script>
+
+
+$(document).ready(function () {
+  var question_pk =document.getElementById("que_pk").value;
+  ongoing = false;
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/c_cpp");
+  editor.getSession().setTabSize(5);
+
+  $("#lang_select").change(function () {
+    selected_lang = $("#lang_select").val();
+    console.log(selected_lang);
+    if (selected_lang == "CPP14" || selected_lang == "C") {
+      editor.getSession().setMode("ace/mode/c_cpp");
+    } else {
+      editor.getSession().setMode("ace/mode/" + selected_lang.toLowerCase());
+    }
+  });
+  $("#theme_select").change(function () {
+    selected_theme = $("#theme_select").val();
+    if (selected_theme == "Light") {
+      editor.setTheme("ace/theme/dawn");
+    } else if (selected_theme == "Monokai") {
+      editor.setTheme("ace/theme/monokai");
+    } else if (selected_theme == "Solarised Light") {
+      editor.setTheme("ace/theme/solarized_light");
+    } else if (selected_theme == "Twilight") {
+      editor.setTheme("ace/theme/twilight");
+    }
+  });
+
+  ace.require("ace/ext/language_tools");
+  editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true,
+  });
+
+  // form submit
+  function runCode() {
+    if (ongoing == true) return;
+    ongoing = true;
+    $("#submit_code").prop("disabled", true);
+    $("#test_code").prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "/run_code",
+      data: {
+        code_: editor.getValue(),
+        Input: document.getElementById("Input_").value,
+        lang: $("#lang_select").val(),
+        dataType: "json",
+        csrfmiddlewaretoken: $(":input[name='token']").val(),
+      },
+      success: function (response) {
+        console.log(response);
+        
+        if(response.run_status.status == 'AC'){
+          document.getElementById("test_output_div").style.display = "block";
+          document.getElementById("test_output").innerHTML =
+          response.run_status.output_html;
+          document.getElementById("compilation_error_div").style.display = "none";
+          document.getElementById("compilation_error_alert").style.display = "none";
+          document.getElementById("submit_div").style.display = "none";
+          document.getElementById("alert").style.display = "none";
+          console.log("AC");
+
+
+          
+          
+
+        }else{
+          console.log(response.compile_status);
+          document.getElementById("test_output_div").style.display = "none";
+          document.getElementById("submit_div").style.display = "none";
+          document.getElementById("alert").style.display = "none";
+          document.getElementById("compilation_error_div").style.display = "block";
+          document.getElementById("compilation_error_alert").style.display = "block";
+          if(response.compile_status == "OK"){
+            // document.getElementById("compilation_error_alert_message").innerHTML = response.output_html;
+
+            document.getElementById("test_output_div").style.display = "block";
+            document.getElementById("test_output").innerHTML =
+            response.run_status.output_html;
+            document.getElementById("compilation_error_div").style.display = "none";
+            document.getElementById("compilation_error_alert").style.display = "none";
+
+
+
+            console.log("error");
+
+          }else{
+            document.getElementById("compilation_error_alert_message").innerHTML = response.compile_status;
+          }
+          // document.getElementById("compilation_error_alert_message").innerHTML = response.compile_status;
+          
+
+        }
+        
+
+       
+       
+        console.log(document.getElementById("Input_").value);
+        $("#test_code").prop("disabled", false);
+
+        $("#submit_code").prop("disabled", false);
+        ongoing = false;
+      },
+    });
+  }
+
+
+
+  function SubmitCode(){
+    if (ongoing == true) return;
+    ongoing = true;
+    $("#submit_code").prop("disabled", true);
+    $("#test_code").prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "/submit_code_w_c/"+question_pk,
+      data: {
+        code_: editor.getValue(),
+        lang: $("#lang_select").val(),
+        dataType: "json",
+        csrfmiddlewaretoken: $(":input[name='token']").val(),
+      },
+      success: function (response) {
+        
+          
+          if(response.message == "Test Cases Passed"){
+           
+            document.getElementById("test_output_div").style.display = "none";
+            document.getElementById("compilation_error_div").style.display = "none";
+            document.getElementById("compilation_error_alert").style.display = "none";
+            document.getElementById("test_output_div").style.display = "none";
+            document.getElementById("submit_div").style.display = "block";
+            document.getElementById("message").innerHTML =
+            response.message;
+  
+          }else if(response.message == "Compilation Error"){
+            
+            console.log(response.message);
+            document.getElementById("test_output_div").style.display = "none";
+            document.getElementById("submit_div").style.display = "none";
+            document.getElementById("alert").style.display = "none";
+            document.getElementById("compilation_error_div").style.display = "block";
+            document.getElementById("compilation_error_alert").style.display = "block";
+            document.getElementById("compilation_error_alert_message").innerHTML = response.message;
+
+          }else{
+           
+            console.log(response.message);
+            document.getElementById("test_output_div").style.display = "none";
+            document.getElementById("submit_div").style.display = "none";
+            document.getElementById("alert").style.display = "none";
+            document.getElementById("compilation_error_div").style.display = "block";
+            document.getElementById("compilation_error_alert").style.display = "block";
+            document.getElementById("compilation_error_alert_message").innerHTML = response.message;
+
+          }
+
+      
+
+
+          
+          
+
+        
+       
+
+        
+
+        console.log(response);
+        // console.log(document.getElementById("Input_").value);
+        $("#test_code").prop("disabled", false);
+        $("#submit_code").prop("disabled", false);
+        ongoing = false;
+      },
+    });
+
+  }
+
+
+  $("#submit_code").click(function () {
+    SubmitCode();
+
+    console.log("submittiing code...");
+  });
+
+
+  $("#test_code").click(function () {
+    runCode();
+
+    console.log("running code...");
+  });
+});
+
+
+
+
+
+
+
+</script>
+
+
+
+  </body>
+</html>

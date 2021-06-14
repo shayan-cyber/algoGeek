@@ -30,6 +30,7 @@ class Profile(models.Model):
     type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=100,default=" ")
+    total_points = models.IntegerField(default=0)
     def __str__(self):
         return str(self.user.username)
 
@@ -71,5 +72,11 @@ class ScoreCard(models.Model):
     prof = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
     score = models.IntegerField(default=0)
     _ques = models.ManyToManyField(Question, blank=True)
+    time = models.DateTimeField(blank=True,null=True)
     def __str__(self):
         return str(self._contest) + " from " + str(self.prof)
+class Bookmark(models.Model):
+    questions = models.ManyToManyField(Question)
+    owner = models.OneToOneField(Profile,on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.owner)

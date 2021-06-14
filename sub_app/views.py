@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
 import requests
 import json
-from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard
+from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard, Bookmark
 import uuid
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -100,18 +100,34 @@ def submit_code(request,pk):
 
 
 
+                #for dry run by curator
 
-                # checking scorecard
-                scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
-                scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])[0]
-                print(scoredcard_check_2)
-                if scorecard_check:
-                    print("already got marks")
-                elif scoredcard_check_2:
-                    if question.contest_of.end_time > now:
-                        scoredcard_check_2._ques.add(question)
-                        scoredcard_check_2.score = scoredcard_check_2.score + question.score
-                        scoredcard_check_2.save()
+                if request.user == question.contest_of.curator.user:
+                    print('curator visited')
+                    
+                else:
+
+                    # checking scorecard
+                    scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
+                    scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])[0]
+                    print(scoredcard_check_2)
+                    if scorecard_check:
+                        print("already got marks")
+                    elif scoredcard_check_2:
+                        if question.contest_of.end_time > now:
+                            scoredcard_check_2._ques.add(question)
+                            scoredcard_check_2.score = scoredcard_check_2.score + question.score
+                            scoredcard_check_2.time = now
+                            scoredcard_check_2.save()
+                            scorecards_for_total_points = ScoreCard.objects.filter(prof = Profile.objects.filter(user = request.user)[0])
+                            #adding total points 
+                            total = 0
+                            for scr in scorecards_for_total_points:
+                                total = total + int(scr.score)
+                            prof_of_the_user = Profile.objects.filter(user =request.user)[0]
+                            prof_of_the_user.total_points = total
+                            prof_of_the_user.save()
+                                
 
 
                 msg ={
@@ -216,15 +232,28 @@ def problem(request, pk):
     now = pytz.utc.localize(now)
     
     question = Question.objects.filter(pk =pk)[0]
-    if question.contest_of.start_time < now:
+
+
+    #test for curator 
+    if request.user == question.contest_of.curator.user:
         end_time= str(question.contest_of.end_time)
         context = {
             'question':question,
-            'end_time':end_time,
+            # 'end_time':end_time,
         }
         return render(request,"problem.html", context)
     else:
-        raise Http404()
+        
+
+        if question.contest_of.start_time < now:
+            end_time= str(question.contest_of.end_time)
+            context = {
+                'question':question,
+                'end_time':end_time,
+            }
+            return render(request,"problem.html", context)
+        else:
+            raise Http404()
 
 
 
@@ -237,8 +266,21 @@ def view_contest(request,pk):
     now = pytz.utc.localize(now)
     # print(end_time_)
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
+    # score_cards = score_cards.order_by("time")
+    #checking for solved ques
+    ls =[]
     
-    print(score_cards)
+    scr_crd = ScoreCard.objects.filter(_contest = contest_, prof = Profile.objects.filter(user = request.user)[0])
+    if scr_crd:
+        scr_crd = scr_crd[0]
+
+    
+        for i in scr_crd._ques.all():
+            ls.append(i)
+        print(ls)
+
+        
+        print(score_cards)
 
 
     
@@ -251,6 +293,7 @@ def view_contest(request,pk):
             'contest' : contest_,
             'questions': questions_,
             'start_time':start_time,
+            'ls':ls
             
             
         }
@@ -269,6 +312,7 @@ def view_contest(request,pk):
         'questions': questions_,
         'end_time':end_time_,
         'score_cards':score_cards,
+        'ls':ls
         }
 
 
@@ -455,5 +499,106 @@ def log_in(request):
         else:
             messages.warning(request, "Invalid Credentials")
             return redirect('/register')
+@login_required(login_url='/register')
+def add_to_bookmark(request, pk):
+    if request.is_ajax():
+        pk_id = request.POST.get('pk','')
+        question_ =Question.objects.filter(pk=pk)[0]
+        bookmark = Bookmark.objects.filter(owner = Profile.objects.filter(user = request.user)[0])
+        if bookmark:
+            if question_ not in bookmark:
+                bookmark[0].questions.add(question_)
+        else:
+            bookmark_ = Bookmark(owner= Profile.objects.filter(user = request.user)[0] )
+            bookmark_.save()
+            bookmark.questions.add(question_)
+        return JsonResponse({'message':"bookmarks added"},safe=False)
 
+@login_required(login_url='/register')
+def problem_w_c(request,pk):
+    problem_ = Question.objects.filter(pk = pk)[0]
+    context ={
+        'question':problem_,
+    }
+    return render(request, "problem_without_contest.html")
+
+@login_required(login_url='/register')
+def submit_code_w_c(request,pk):
+    question =Question.objects.filter(pk=pk)[0]
+  
+    if request.is_ajax():
+        code_ = request.POST['code_']
+        lang = request.POST['lang']
+        print(lang)
+        data = {
+            'client_secret': '01f0859bab2c86c1e6a1c1fb549f27a805baad59' ,
+            'async':0,
+            'source':code_,
+            'lang':lang,
+            'time_limit':question.time_limit,
+            'memory_limit': 262144,
+
+        }
+        if len(question.input_cases)> 0:
+            data["input"] = question.input_cases
+            print(question.input_cases)
+
+        
+
+        
+
+
+        resp = requests.post(RUN_URL, data=data)
+        resp_json = resp.json()
+        
+        if resp_json['run_status']['status']=='AC':
+            output_ = resp_json['run_status']['output'] 
+            time_limit_reached = resp_json['run_status']['time_used']
+            print(str(output_))
+            # print(str(question.test_cases))
+            string = question.test_cases
+            print(string)
+            print (string.splitlines())
+            print(output_.splitlines())
+
+
+            if string.splitlines() == output_.splitlines():
+                print("test cases passed")
+                print(resp_json)
+               
+
+
+                msg ={
+                    'message':"Test Cases Passed",
+                    'output': resp_json['run_status']['output']
+                }
+                # else:
+                #     msg ={
+                #         'message':"Time Limit Exceeded",
+                #         'output': resp_json['run_status']['output']
+                #     }
+
+            else:
+                msg= {
+                    'message':"Test Cases Not Passed",
+                    'output':resp_json['run_status']['output']
+                }
+
+
+        elif resp_json['run_status']['status']=='TLE':
+            msg = {
+                        'message':"Time Limit Exceeded",
+                       'output': resp_json['run_status']['output']
+                     }
+
+        else:
+            print("Compilation Error")
+            print(resp_json)
+            msg ={
+                    'message':"Compilation Error",
+                  
+                }
+
+        return JsonResponse(msg,safe=False)
+        
 
