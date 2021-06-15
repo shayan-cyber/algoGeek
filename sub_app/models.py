@@ -61,12 +61,31 @@ class Question(models.Model):
     curation_time = models.DateTimeField(auto_now_add=True)
     difficulty = models.CharField(max_length=2,choices=DIFFICULTY_CHOICES, default='MD')
     category = models.ForeignKey(DsAlgoTopics, on_delete=models.CASCADE, null=True,blank=True)
-    contest_of = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True,blank=True) 
+    contest_of = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True,blank=True)
+    prof_w_c = models.ForeignKey(Profile, on_delete=models.CASCADE, default=True, null=True) 
     score = models.IntegerField(default=0)
     
 
     def __str__(self):
         return str(self.title)
+
+
+#no use -->       
+class NormalProblem(models.Model):
+    title = models.CharField(max_length=400)
+    description= models.TextField()
+    time_limit = models.IntegerField()
+    test_cases = models.TextField()
+    input_cases = models.TextField(null=True, blank=True)
+    curation_time = models.DateTimeField(auto_now_add=True)
+    difficulty = models.CharField(max_length=2,choices=DIFFICULTY_CHOICES, default='MD')
+    category = models.ForeignKey(DsAlgoTopics, on_delete=models.CASCADE, null=True,blank=True)
+    curator = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.title)
+
+#no use<--
+
 class ScoreCard(models.Model):
     _contest = models.ForeignKey(Contest, on_delete=models.CASCADE,blank=True, null=True)
     prof = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
@@ -78,5 +97,12 @@ class ScoreCard(models.Model):
 class Bookmark(models.Model):
     questions = models.ManyToManyField(Question)
     owner = models.OneToOneField(Profile,on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.owner)
+
+
+class SolvedOrNot(models.Model):
+    owner = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    probs = models.ManyToManyField(Question)
     def __str__(self):
         return str(self.owner)

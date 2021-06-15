@@ -18,7 +18,12 @@ urlpatterns =[
     path('view_contest/<int:pk>', views.view_contest, name="view_contest"),
     path('add_to_bookmark/<int:pk>', views.add_to_bookmark, name="add_to_bookmark"),
     path("problem_w_c/<int:pk>", views.problem_w_c, name="problem_w_c"),
-    path('submit_code_w_c/<int:pk>', views.submit_code_w_c, name="submit_code_w-c")
+    path('submit_code_w_c/<int:pk>', views.submit_code_w_c, name="submit_code_w-c"),
+    path('normal_problem_setting/<int:pk>', views.normal_problem_setting, name="normal_problem_setting"),
+    path('normal_problem_edit/<int:pk>', views.normal_problem_edit, name="normal_problem_edit"),
+    path('normal_problems', views.normal_problems, name="normal_problems"),
+    
+    
 
 
 

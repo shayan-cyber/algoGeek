@@ -13,6 +13,71 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
     crossorigin="anonymous"></script>
+
+
+
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: "#mytextarea ,#modaltextarea",
+        // selector:"#",
+        height: 500,
+  
+        plugins: "image code",
+        toolbar: "undo redo | link image | code",
+        /* enable title field in the Image dialog*/
+        image_title: true,
+        /* enable automatic uploads of images represented by blob or data URIs*/
+        automatic_uploads: true,
+        /*
+      URL of our upload handler (for more details check: https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_url)
+      images_upload_url: 'postAcceptor.php',
+      here we add custom filepicker only to Image dialog
+    */
+        file_picker_types: "image",
+        /* and here's our custom image picker*/
+        file_picker_callback: function (cb, value, meta) {
+          var input = document.createElement("input");
+          input.setAttribute("type", "file");
+          input.setAttribute("accept", "image/*");
+  
+          /*
+          Note: In modern browsers input[type="file"] is functional without
+          even adding it to the DOM, but that might not be the case in some older
+          or quirky browsers like IE, so you might want to add it to the DOM
+          just in case, and visually hide it. And do not forget do remove it
+          once you do not need it anymore.
+        */
+  
+          input.onchange = function () {
+            var file = this.files[0];
+  
+            var reader = new FileReader();
+            reader.onload = function () {
+              /*
+                  Note: Now we need to register the blob in TinyMCEs image blob
+                  registry. In the next release this part hopefully won't be
+                  necessary, as we are looking to handle it internally.
+                */
+              var id = "blobid" + new Date().getTime();
+              var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+              var base64 = reader.result.split(",")[1];
+              var blobInfo = blobCache.create(id, file, base64);
+              blobCache.add(blobInfo);
+  
+              /* call the callback and populate the Title field with the file name */
+              cb(blobInfo.blobUri(), { title: file.name });
+            };
+            reader.readAsDataURL(file);
+          };
+  
+          input.click();
+        },
+        content_style:
+          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+      });
+    </script>
+
 </head>
 <style>
   body {
@@ -132,6 +197,9 @@
                 </g>
               </svg></a>
           </div>
+
+
+          
 
 
 
@@ -276,6 +344,281 @@
       </div>
     </div>
     <br><br>
+
+
+    <div class="row">
+      <div class="col-md-4">
+        <br>
+          <div style="margin-left: 0.5rem; margin-bottom: 1rem;">
+            Add Practice Problem
+            <a data-bs-toggle="modal" data-bs-target="#addproblem" href="#"><svg xmlns="http://www.w3.org/2000/svg"
+                x="0px" y="0px" width="40" height="40" viewBox="0 0 172 172" style="fill: #000000">
+                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                  stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                  font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                  style="mix-blend-mode: normal">
+                  <path d="M0,172v-172h172v172z" fill="none"></path>
+                  <g>
+                    <path
+                      d="M86,161.25c-41.4907,0 -75.25,-33.7593 -75.25,-75.25c0,-41.4907 33.7593,-75.25 75.25,-75.25c41.4907,0 75.25,33.7593 75.25,75.25c0,41.4907 -33.7593,75.25 -75.25,75.25z"
+                      fill="#0d6efd"></path>
+                    <path
+                      d="M86,12.9c40.3082,0 73.1,32.7918 73.1,73.1c0,40.3082 -32.7918,73.1 -73.1,73.1c-40.3082,0 -73.1,-32.7918 -73.1,-73.1c0,-40.3082 32.7918,-73.1 73.1,-73.1M86,8.6c-42.7463,0 -77.4,34.6537 -77.4,77.4c0,42.7463 34.6537,77.4 77.4,77.4c42.7463,0 77.4,-34.6537 77.4,-77.4c0,-42.7463 -34.6537,-77.4 -77.4,-77.4z"
+                      fill="#4788c7"></path>
+                    <path
+                      d="M43,81.7h86c2.3736,0 4.3,1.9264 4.3,4.3v0c0,2.3736 -1.9264,4.3 -4.3,4.3h-86c-2.3736,0 -4.3,-1.9264 -4.3,-4.3v0c0,-2.3736 1.9264,-4.3 4.3,-4.3z"
+                      fill="#98ccfd"></path>
+                    <path
+                      d="M90.3,43v86c0,2.3736 -1.9264,4.3 -4.3,4.3v0c-2.3736,0 -4.3,-1.9264 -4.3,-4.3v-86c0,-2.3736 1.9264,-4.3 4.3,-4.3v0c2.3736,0 4.3,1.9264 4.3,4.3z"
+                      fill="#98ccfd"></path>
+                  </g>
+                </g>
+              </svg></a>
+          </div>
+      </div>
+    </div>
+
+
+
+<!-- modal for add problem start-->
+
+
+<div class="modal fade" id="addproblem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="addproblemLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addproblemLabel">
+              Add Problem
+             
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{% url 'normal_problem_setting' prof.pk %}">
+              {% csrf_token %}
+
+              <label for="title" class="form-label">Title</label>
+              <input type="text" class="form-control" id="title" name="title" required />
+              <br />
+
+              <label for="mytextarea" class="form-label">Description</label>
+              <textarea name="description" id="modaltextarea" required>
+                {{i.description}}
+              </textarea>
+
+              <br />
+
+              
+              <br />
+              <label for="input_cases" class="form-label">Input Cases</label>
+              <textarea name="input_cases" class="form-control" id="input_cases" cols="30" rows="10"
+                aria-describedby="inputCases"></textarea>
+              <div id="inputCases" class="form-text">
+                Type the inputs with proper indentation and spacing
+              </div>
+              <br />
+
+              <label for="test_cases" class="form-label">Test Cases</label>
+              <textarea name="test_cases" class="form-control" id="test_cases" cols="30" rows="10"
+                aria-describedby="testCases" required></textarea>
+              <div id="testCases" class="form-text">
+                Type the inputs with proper indentation and spacing
+              </div>
+              <br />
+
+              <label for="time_limit" class="form-label">Time Limit</label>
+              <input type="number" id="time_limit" class="form-control" name="time_limit"  required />
+              <br />
+
+              
+              
+
+              <br />
+              <label for="difficulty" class="form-label">Difficulty</label>
+              <select class="form-select form-select-sm" id="difficulty" name="difficulty"
+                aria-label=".form-select-sm example">
+                <option value="MD" selected>Medium</option>
+                <option value="ES">Easy</option>
+                <option value="HD">Hard</option>
+                <option value="VH">Very Hard</option>
+                <option value="EX">Expert</option>
+                >
+              </select>
+              <br />
+              <label for="DsAlgo" class="form-label">Algorithm Used</label>
+              <select class="form-select form-select-sm" id="DsAlgo" name="category"
+                aria-label=".form-select-sm example">
+                <option value="{{dsalgos.0.pk}}" selected>
+                  {{dsalgos.0.name}}
+                </option>
+
+                {% for i in dsalgos|slice:"1:" %}
+
+                <option value="{{i.pk}}">{{i.name}}</option>
+
+                {% endfor %}
+              </select>
+
+              <br /><br />
+              <hr />
+              <br />
+              <center>
+                <button type="submit" class="btn btn-outline-info btn-lg mb-5">
+                  Submit
+                </button>
+              </center>
+              <br />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+<!-- modal for add prob end -->
+
+
+
+
+
+
+    <div class="row mt-2">
+
+
+      {% for i in problems_w_c %}
+    <div class="com-sm-12">
+
+      <div style="width: 100%" class="alert alert-info" role="alert">
+        <div class="row">
+          <div class="col-6">
+            <span><strong>{{forloop.counter}}.</strong> </span>{{i.title|truncatechars:15}}
+          </div>
+          <div class="col-3">
+            <a style="border-radius: 0.1rem" href="#" class="btn btn-outline-primary" data-bs-toggle="modal"
+              data-bs-target="#editProblem{{i.pk}}">Edit
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path
+                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                <path fill-rule="evenodd"
+                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+              </svg>
+            </a>
+          </div>
+          <div class="col-3">
+            <a style="border-radius: 0.1rem" href="{% url 'problem_w_c' i.pk %}" class="btn btn-primary" >Test
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning" viewBox="0 0 16 16">
+                <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z"/>
+              </svg>
+            </a>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- modal start edit problem -->
+
+    <div class="modal fade" id="editProblem{{i.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="editProblem{{i.pk}}Label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProblem{{i.pk}}Label">
+              Edit Problem
+              <small style="font-weight: lighter"> ({{i.title}})</small>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{% url 'normal_problem_edit' i.pk %}">
+              {% csrf_token %}
+
+              <label for="title" class="form-label">Title</label>
+              <input type="text" class="form-control" id="title" name="title_edit" value="{{i.title}}" required />
+              <br />
+
+              <label for="mytextarea" class="form-label">Description</label>
+              <textarea name="description_edit" id="modaltextarea" required>
+                {{i.description}}
+              </textarea>
+
+              <br />
+
+              
+              <label for="input_cases" class="form-label">Input Cases</label>
+              <textarea name="input_cases_edit" class="form-control" id="input_cases" cols="30" rows="10"
+                aria-describedby="inputCases">{{i.input_cases}}</textarea>
+              <div id="inputCases" class="form-text">
+                Type the inputs with proper indentation and spacing
+              </div>
+              <br />
+
+              <label for="test_cases" class="form-label">Test Cases</label>
+              <textarea name="test_cases_edit" class="form-control" id="test_cases" cols="30" rows="10"
+                aria-describedby="testCases" required>{{i.test_cases}}</textarea>
+              <div id="testCases" class="form-text">
+                Type the inputs with proper indentation and spacing
+              </div>
+              <br />
+
+              <label for="time_limit" class="form-label">Time Limit</label>
+              <input type="number" id="time_limit" class="form-control" name="time_limit_edit" value="{{i.time_limit}}" required />
+              <br />
+
+              <input type="text" value="{{i.id}}" name="problem_id_edit" style="display: none" />
+              
+
+              <br />
+              <label for="difficulty" class="form-label">Difficulty</label>
+              <select class="form-select form-select-sm" id="difficulty" name="difficulty_edit"
+                aria-label=".form-select-sm example">
+                <option value="MD" selected>Medium</option>
+                <option value="ES">Easy</option>
+                <option value="HD">Hard</option>
+                <option value="VH">Very Hard</option>
+                <option value="EX">Expert</option>
+                >
+              </select>
+              <br />
+              <label for="DsAlgo" class="form-label">Algorithm Used</label>
+              <select class="form-select form-select-sm" id="DsAlgo" name="category_edit"
+                aria-label=".form-select-sm example">
+                <option value="{{dsalgos.0.pk}}" selected>
+                  {{dsalgos.0.name}}
+                </option>
+
+                {% for i in dsalgos|slice:"1:" %}
+
+                <option value="{{i.pk}}">{{i.name}}</option>
+
+                {% endfor %}
+              </select>
+
+              <br /><br />
+              <hr />
+              <br />
+              <center>
+                <button type="submit" class="btn btn-outline-info btn-lg mb-5">
+                  Submit
+                </button>
+              </center>
+              <br />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal end -->
+
+    {% endfor %}
+
+
+
+    </div>
 
 
 

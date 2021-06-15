@@ -294,7 +294,7 @@
                                         <div class="col-md-7">
 
 
-                                            {% if i in ls %}
+                                            {% if i in  solved_or_not %}
                                             <a style="
             font-family: SourceCodePro, monaco, Courier, monospace;
             font-size: 1rem;
@@ -563,31 +563,7 @@
             }
 
         })
-    //     $.ajax({
-    //   type: "POST",
-    //   url: "/run_code",
-    //   data: {
-    //     code_: editor.getValue(),
-    //     Input: document.getElementById("Input_").value,
-    //     lang: $("#lang_select").val(),
-    //     dataType: "json",
-    //     csrfmiddlewaretoken: $(":input[name='token']").val(),
-    //   },
-    //   success: function (response) {
-    //     console.log(response);
-        
-    //     if(response.run_status.status == 'AC'){
-    //       document.getElementById("test_output_div").style.display = "block";
-    //       document.getElementById("test_output").innerHTML =
-    //       response.run_status.output_html;
-    //       document.getElementById("compilation_error_div").style.display = "none";
-    //       document.getElementById("compilation_error_alert").style.display = "none";
-    //       document.getElementById("submit_div").style.display = "none";
-    //       document.getElementById("alert").style.display = "none";
-    //       console.log("AC");
-
-
-          
+   
           
 
 

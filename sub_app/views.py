@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
 import requests
 import json
-from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard, Bookmark
+from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard, Bookmark, SolvedOrNot
 import uuid
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -107,6 +107,19 @@ def submit_code(request,pk):
                     
                 else:
 
+                    #solved r not
+                    solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
+                    if solved_check :
+                        solved_check[0].probs.add(question)
+                    else:
+                        solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
+                        solved_or_not.save()
+                        solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
+                        solved_check.probs.add(question)
+                    
+
+
+
                     # checking scorecard
                     scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
                     scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])[0]
@@ -201,11 +214,84 @@ def problem_setting(request, pk):
     }
     return render(request,"problem_setting.html",context)
 
+@login_required(login_url='/register')
+def normal_problem_setting(request,pk):
+    dsalgos = DsAlgoTopics.objects.all()
+    # ques = Question.objects.filter(contest_of = contest).order_by('-curation_time')
+    prof_ = Profile.objects.filter(pk = pk)[0]
+
+    not_contest = Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]
+    
+
+    if request.method =='POST':
+        test_case = request.POST.get('test_cases','')
+        input_case = request.POST.get('input_cases','')
+        score = 0
+        description = request.POST.get('description','')
+        time_limit = request.POST.get('time_limit','')
+        difficulty = request.POST.get('difficulty', '')
+        # contest_id = request.POST.get('contest_id','')
+        # contest_uid = request.POST.get('contest_uid','')
+        title = request.POST.get('title','')
+        category = request.POST.get('category','')
+        dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
+
+        
+        contest =not_contest
+        print(contest)
+        question = Question(title=title, description=description, score=score,time_limit=time_limit, test_cases = test_case, input_cases= input_case,difficulty=difficulty, category=dsalgo,contest_of =contest)
+
+        question.save()
+        return redirect("/profile/" + str(pk))
+
+    # context = {
+    #     "contest":contest,
+    #     'dsalgos':dsalgos,
+        
+    # }
+
+    else:
+        raise Http404()
+@login_required(login_url='/register')  
+def normal_problem_edit(request,pk):
+    problem_ = Question.objects.filter(pk =pk)[0]
+    if request.method == "POST":
+        if problem_.prof_w_c == Profile.objects.filter(user = request.user)[0]:
+            
+            test_case = request.POST.get('test_cases_edit','')
+            input_case = request.POST.get('input_cases_edit','')
+            description = request.POST.get('description_edit','')
+            score = 0
+            time_limit = request.POST.get('time_limit_edit','')
+            difficulty = request.POST.get('difficulty_edit', '')
+            
+            
+            title = request.POST.get('title_edit','')
+            category = request.POST.get('category_edit','')
+            dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
+
+            problem_.test_cases =test_case
+            problem_.input_cases = input_case
+            problem_.description =description
+            problem_.score = score
+            problem_.time_limit =time_limit
+            problem_.dfficulty =difficulty
+            problem_.title =title
+            problem_.category =dsalgo
+            problem_.save()
+            
+            return redirect("/profile/"+str(problem_.prof_w_c.pk))
+        else:
+            raise Http404()
+    else:
+        raise Http404()   
+
 
 
 @login_required(login_url='/register')
 def contests(request):
-    contests_ = Contest.objects.all().order_by('-curation_time')
+    contests_ = Contest.objects.exclude(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')
+
 
 
     for contest_ in contests_:
@@ -218,8 +304,8 @@ def contests(request):
                 contest_.status = "IA"
                 contest_.save()
                 print(contest_.status)
-    active_contests = Contest.objects.filter(status = "AC").order_by('-curation_time')
-    previous_contests = Contest.objects.filter(status ="IA").order_by("-curation_time")
+    active_contests = Contest.objects.filter(status = "AC").order_by('-curation_time').difference(Contest.objects.filter(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')) 
+    previous_contests = Contest.objects.filter(status ="IA").order_by("-curation_time").difference(Contest.objects.filter(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time'))  
     context ={
         'active_contests':active_contests,
         'previous_contests': previous_contests,
@@ -268,19 +354,27 @@ def view_contest(request,pk):
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
     # score_cards = score_cards.order_by("time")
     #checking for solved ques
-    ls =[]
+    # ls =[]
     
     scr_crd = ScoreCard.objects.filter(_contest = contest_, prof = Profile.objects.filter(user = request.user)[0])
-    if scr_crd:
-        scr_crd = scr_crd[0]
+    # if scr_crd:
+    #     scr_crd = scr_crd[0]
 
     
-        for i in scr_crd._ques.all():
-            ls.append(i)
-        print(ls)
+    #     for i in scr_crd._ques.all():
+    #         ls.append(i)
+    #     print(ls)
 
         
-        print(score_cards)
+    #     print(score_cards)
+    solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
+    if solved_or_not:
+
+        
+        solved_or_not = solved_or_not[0].probs.all()
+    else:
+        solved_or_not =[]
+
 
 
     
@@ -293,7 +387,7 @@ def view_contest(request,pk):
             'contest' : contest_,
             'questions': questions_,
             'start_time':start_time,
-            'ls':ls
+            'solved_or_not':solved_or_not,
             
             
         }
@@ -312,7 +406,7 @@ def view_contest(request,pk):
         'questions': questions_,
         'end_time':end_time_,
         'score_cards':score_cards,
-        'ls':ls
+        'solved_or_not':solved_or_not,
         }
 
 
@@ -393,6 +487,8 @@ def edit_contest(request, pk):
 
     else:
         raise Http404()
+
+
 @login_required(login_url='/register')
 def delete_contest(request, pk):
     contest_ = Contest.objects.filter(pk=pk)[0]
@@ -400,6 +496,7 @@ def delete_contest(request, pk):
     if request.user == prof_.user:
         contest_.delete()
     return redirect('/profile/'+ str(prof_.pk))
+
 @login_required(login_url='/register')
 def edit_problem(request,pk):
     problem_ = Question.objects.filter(pk=pk)[0]
@@ -431,7 +528,26 @@ def edit_problem(request,pk):
     else:
         raise Http404()
 
-       
+
+
+@login_required(login_url='/register')
+def normal_problems(request):
+    not_contest_ = Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]
+
+    probs = Question.objects.filter(contest_of = not_contest_).order_by("-curation_time")
+    solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
+    if solved_or_not:
+
+        
+        solved_or_not = solved_or_not[0].probs.all()
+    else:
+        solved_or_not =[]
+    context ={
+        'probs':probs,
+        'solved_or_not':solved_or_not,
+    }
+
+    return render(request, "normal_problems.html",context)
     
 
 
@@ -440,10 +556,13 @@ def edit_problem(request,pk):
 def profile_visit(request,pk):
     prof_ = Profile.objects.filter(pk=pk)[0]
     if prof_.type == "CU":
-        contests_ = Contest.objects.filter(curator = prof_).order_by("-curation_time")
+        contests_ = Contest.objects.exclude(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')
+        probs_w_c = Question.objects.filter(prof_w_c= Profile.objects.filter(user = request.user)[0],contest_of =Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]).order_by('-curation_time')  
         context={
             'contests':contests_,
-            'prof':prof_
+            'prof':prof_,
+            'problems_w_c': probs_w_c,
+            'dsalgos':DsAlgoTopics.objects.all()
         }
         # print(prof_)
         # print(contests_)
@@ -511,7 +630,8 @@ def add_to_bookmark(request, pk):
         else:
             bookmark_ = Bookmark(owner= Profile.objects.filter(user = request.user)[0] )
             bookmark_.save()
-            bookmark.questions.add(question_)
+            bookmark = Bookmark.objects.filter(owner = Profile.objects.filter(user = request.user)[0])
+            bookmark[0].questions.add(question_)
         return JsonResponse({'message':"bookmarks added"},safe=False)
 
 @login_required(login_url='/register')
@@ -520,7 +640,7 @@ def problem_w_c(request,pk):
     context ={
         'question':problem_,
     }
-    return render(request, "problem_without_contest.html")
+    return render(request, "problem_without_contest.html",context)
 
 @login_required(login_url='/register')
 def submit_code_w_c(request,pk):
@@ -566,7 +686,15 @@ def submit_code_w_c(request,pk):
                 print("test cases passed")
                 print(resp_json)
                
-
+                #solved r not
+                solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
+                if solved_check :
+                    solved_check[0].probs.add(question)
+                else:
+                    solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
+                    solved_or_not.save()
+                    solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
+                    solved_check.probs.add(question)
 
                 msg ={
                     'message':"Test Cases Passed",
