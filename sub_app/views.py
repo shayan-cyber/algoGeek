@@ -60,7 +60,7 @@ def submit_code(request,pk):
     if request.is_ajax():
         code_ = request.POST['code_']
         lang = request.POST['lang']
-        print(lang)
+        # print(lang)
         data = {
             'client_secret': '01f0859bab2c86c1e6a1c1fb549f27a805baad59' ,
             'async':0,
@@ -72,7 +72,7 @@ def submit_code(request,pk):
         }
         if len(question.input_cases)> 0:
             data["input"] = question.input_cases
-            print(question.input_cases)
+            # print(question.input_cases)
 
         
 
@@ -84,16 +84,46 @@ def submit_code(request,pk):
         
         if resp_json['run_status']['status']=='AC':
             output_ = resp_json['run_status']['output'] 
+            output_ =str(output_)
+            
             time_limit_reached = resp_json['run_status']['time_used']
-            print(str(output_))
+            # print(str(output_))
             # print(str(question.test_cases))
             string = question.test_cases
-            print(string)
+           
+           
+
+
+
+
+
+            x = len(output_)-2
+            if output_[-2]==" " :
+
+            
+                print(len(output_))
+                # print(output_[0:x])
+                output_ = output_[0:(x)]
+                print(output_)
+            else:
+                output_ = output_[0:(x+1)]
+
+                print(output_)
+
+
+
+
+
+
+
+            print(resp_json)
             print (string.splitlines())
             print(output_.splitlines())
+            # print(string.splitlines()[0])
 
 
-            if string.splitlines() == output_.splitlines():
+            if string.splitlines()==output_.splitlines():
+
                 print("test cases passed")
                 print(resp_json)
                 # if float(time_limit_reached) <= float(question.time_limit):
@@ -354,19 +384,9 @@ def view_contest(request,pk):
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
     # score_cards = score_cards.order_by("time")
     #checking for solved ques
-    # ls =[]
-    
+   
     scr_crd = ScoreCard.objects.filter(_contest = contest_, prof = Profile.objects.filter(user = request.user)[0])
-    # if scr_crd:
-    #     scr_crd = scr_crd[0]
-
     
-    #     for i in scr_crd._ques.all():
-    #         ls.append(i)
-    #     print(ls)
-
-        
-    #     print(score_cards)
     solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
     if solved_or_not:
 
@@ -375,7 +395,8 @@ def view_contest(request,pk):
     else:
         solved_or_not =[]
 
-
+    boomarks_ = Bookmark.objects.filter(owner= Profile.objects.filter(user = request.user)[0])[0]
+    boomark_ques = boomarks_.questions.all()
 
     
 
@@ -388,6 +409,7 @@ def view_contest(request,pk):
             'questions': questions_,
             'start_time':start_time,
             'solved_or_not':solved_or_not,
+            'bookmarked':boomark_ques
             
             
         }
@@ -407,6 +429,7 @@ def view_contest(request,pk):
         'end_time':end_time_,
         'score_cards':score_cards,
         'solved_or_not':solved_or_not,
+        'bookmarked':boomark_ques
         }
 
 
@@ -536,6 +559,8 @@ def normal_problems(request):
 
     probs = Question.objects.filter(contest_of = not_contest_).order_by("-curation_time")
     solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
+    boomarks_ = Bookmark.objects.filter(owner= Profile.objects.filter(user = request.user)[0])[0]
+    boomark_ques = boomarks_.questions.all()
     if solved_or_not:
 
         
@@ -545,6 +570,7 @@ def normal_problems(request):
     context ={
         'probs':probs,
         'solved_or_not':solved_or_not,
+        'bookmarked':boomark_ques
     }
 
     return render(request, "normal_problems.html",context)
@@ -555,7 +581,7 @@ def normal_problems(request):
 @login_required(login_url='/register')
 def profile_visit(request,pk):
     prof_ = Profile.objects.filter(pk=pk)[0]
-    if prof_.type == "CU":
+    if prof_._type == "CU":
         contests_ = Contest.objects.exclude(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')
         probs_w_c = Question.objects.filter(prof_w_c= Profile.objects.filter(user = request.user)[0],contest_of =Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]).order_by('-curation_time')  
         context={
@@ -567,9 +593,84 @@ def profile_visit(request,pk):
         # print(prof_)
         # print(contests_)
 
-    return render(request, "profile.html",context)
-# def add_problem(request):
-#     return render(request, "problem_setting.html")
+        return render(request, "profile_curator.html",context)
+    else:
+
+
+        solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
+        if solved_or_not:
+
+            
+            solved_or_not = solved_or_not[0].probs.all()
+        else:
+            solved_or_not =[]
+
+
+        #for contests participated 
+        score_cards = len(ScoreCard.objects.filter(prof = prof_))
+        print(score_cards)
+        bookmark = Bookmark.objects.filter(owner = prof_)[0]
+        bookmarked_ques = bookmark.questions.all()
+
+
+
+        # for progress bar
+        total_points =int(prof_.total_points)
+        
+        progress = 0
+        if total_points >= 50 and total_points<100:
+            progress = int(100- ((100-total_points)/50)*100)
+            start_point = 50 
+            end_point =100
+        elif total_points >= 100 and total_points<200:
+            progress = int(100- ((200-total_points)/100)*100)
+            start_point = 100 
+            end_point =200
+            
+        elif total_points >= 200 and total_points<400:
+            progress = int(100- ((400-total_points)/200)*100)
+            start_point = 200 
+            end_point =400
+
+
+
+        elif total_points >400:
+            progress = 100
+            start_point = 400
+            end_point = 0
+        else:
+            progress = total_points*2
+            start_point =0
+            end_point =  50
+
+
+
+
+
+        context ={
+            "bookmarked_ques":bookmarked_ques,
+            'bookmark':bookmark,
+            'prof':prof_,
+            'solved_or_not':solved_or_not,
+            'contests_no':score_cards,
+            'progress':progress,
+            'start_point':start_point,
+            'end_point':end_point,
+        }
+        return render(request, "profile_learner.html",context)
+    
+@login_required(login_url='/register')
+def delete_bookmark(request, bk, qk):
+    book_mark =Bookmark.objects.filter(pk = bk)[0]
+    if request.user == book_mark.owner.user:
+        que_ = Question.objects.filter(pk=qk)[0]
+        book_mark.questions.remove(que_)
+        return redirect("/profile/" + str(book_mark.owner.user.pk))
+    else:
+        raise Http404()
+
+
+
 
 def register(request):
     if request.user.is_authenticated:
@@ -649,7 +750,7 @@ def submit_code_w_c(request,pk):
     if request.is_ajax():
         code_ = request.POST['code_']
         lang = request.POST['lang']
-        print(lang)
+       
         data = {
             'client_secret': '01f0859bab2c86c1e6a1c1fb549f27a805baad59' ,
             'async':0,
@@ -661,7 +762,7 @@ def submit_code_w_c(request,pk):
         }
         if len(question.input_cases)> 0:
             data["input"] = question.input_cases
-            print(question.input_cases)
+            
 
         
 
@@ -674,14 +775,38 @@ def submit_code_w_c(request,pk):
         if resp_json['run_status']['status']=='AC':
             output_ = resp_json['run_status']['output'] 
             time_limit_reached = resp_json['run_status']['time_used']
-            print(str(output_))
-            # print(str(question.test_cases))
+            output_ = str(output_)
+            
             string = question.test_cases
-            print(string)
+           
+           
+
+
+
+
+
+            x = len(output_)-2
+            if output_[-2]==" " :
+
+            
+                print(len(output_))
+                # print(output_[0:x])
+                output_ = output_[0:(x)]
+                print(output_)
+            else:
+                output_ = output_[0:(x+1)]
+                
+                print(output_)
+
+
+
+
+
+
+
+            print(resp_json)
             print (string.splitlines())
             print(output_.splitlines())
-
-
             if string.splitlines() == output_.splitlines():
                 print("test cases passed")
                 print(resp_json)

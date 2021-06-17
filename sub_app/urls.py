@@ -22,6 +22,7 @@ urlpatterns =[
     path('normal_problem_setting/<int:pk>', views.normal_problem_setting, name="normal_problem_setting"),
     path('normal_problem_edit/<int:pk>', views.normal_problem_edit, name="normal_problem_edit"),
     path('normal_problems', views.normal_problems, name="normal_problems"),
+    path('delete_bookmark/<int:bk>/<int:qk>', views.delete_bookmark, name="delete_bookmark"),
     
     
 

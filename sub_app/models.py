@@ -27,7 +27,7 @@ STATUS_CONTEST = [
 ]
 # Create your models here.
 class Profile(models.Model):
-    type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
+    _type = models.CharField(max_length=2, choices=TYPE_OF_PROFILE,default='LR')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=100,default=" ")
     total_points = models.IntegerField(default=0)
@@ -97,6 +97,7 @@ class ScoreCard(models.Model):
 class Bookmark(models.Model):
     questions = models.ManyToManyField(Question)
     owner = models.OneToOneField(Profile,on_delete=models.CASCADE)
+    status = models.CharField(max_length=2, choices=STATUS_CONTEST, default="AC")
     def __str__(self):
         return str(self.owner)
 
