@@ -52,23 +52,35 @@ class DsAlgoTopics(models.Model):
     name = models.CharField(max_length=100)
     def __str__(self):
         return str(self.name)
+
+
+
+
+
 class Question(models.Model):
     title = models.CharField(max_length=400)
     description= models.TextField()
     time_limit = models.IntegerField()
-    test_cases = models.TextField()
-    input_cases = models.TextField(null=True, blank=True)
+    # test_cases = models.TextField()
+    # input_cases = models.TextField(null=True, blank=True)
+    # test_case_mult = models.ForeignKey
     curation_time = models.DateTimeField(auto_now_add=True)
     difficulty = models.CharField(max_length=2,choices=DIFFICULTY_CHOICES, default='MD')
     category = models.ForeignKey(DsAlgoTopics, on_delete=models.CASCADE, null=True,blank=True)
     contest_of = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True,blank=True)
-    prof_w_c = models.ForeignKey(Profile, on_delete=models.CASCADE, default=True, null=True) 
+    prof_w_c = models.ForeignKey(Profile, on_delete=models.CASCADE,blank=True, null=True) 
     score = models.IntegerField(default=0)
     
 
     def __str__(self):
         return str(self.title)
-
+class Testcase(models.Model):
+    title = models.CharField(max_length=100)
+    test_cases = models.TextField()
+    input_cases = models.TextField()
+    quest = models.ForeignKey(Question,on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.title) + " from " + str(self.quest.title)
 
 #no use -->       
 class NormalProblem(models.Model):

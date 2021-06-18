@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
 import requests
 import json
-from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard, Bookmark, SolvedOrNot
+from . models import Contest, Profile, Question,DsAlgoTopics, ScoreCard, Bookmark, SolvedOrNot,Testcase
 import uuid
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -70,179 +70,233 @@ def submit_code(request,pk):
             'memory_limit': 262144,
 
         }
-        if len(question.input_cases)> 0:
-            data["input"] = question.input_cases
-            # print(question.input_cases)
+        testCases = Testcase.objects.filter(quest = question)
+        print("tescases")
+        print(testCases)
+        count = 0
 
-        
-
-        
-
-
-        resp = requests.post(RUN_URL, data=data)
-        resp_json = resp.json()
-        
-        if resp_json['run_status']['status']=='AC':
-            output_ = resp_json['run_status']['output'] 
-            output_ =str(output_)
-            
-            time_limit_reached = resp_json['run_status']['time_used']
-            # print(str(output_))
-            # print(str(question.test_cases))
-            string = question.test_cases
+        for testCase in testCases:
            
-           
-
-
-
-
-
-            x = len(output_)-2
-            if output_[-2]==" " :
-
+            if len(testCase.input_cases)> 0:
+                data["input"] = testCase.input_cases
+                print("input giiven")
+                
+            resp = requests.post(RUN_URL, data=data)
+            resp_json = resp.json()
             
-                print(len(output_))
-                # print(output_[0:x])
-                output_ = output_[0:(x)]
-                print(output_)
+            if resp_json['run_status']['status']=='AC':
+                output_ = resp_json['run_status']['output'] 
+                output_ =str(output_)
+                
+                time_limit_reached = resp_json['run_status']['time_used']
+                
+                string =testCase.test_cases
+        
+                string_ = str(string.replace(" ", "").replace("\n",""))
+                output_ =output_.replace(" ", "").replace("\n","")
+                
+            
+               
+                print(''.join(string_.splitlines()))
+                
+                print(''.join(output_.splitlines()))
+
+
+                in_put = ''.join(string_.splitlines())
+                out_put =''.join(output_.splitlines())
+
+
+                if in_put==out_put:
+
+                    print("test cases passed")
+                    count = count +1
+                    print(count)
+
+            elif resp_json['run_status']['status']=='TLE':
+                msg = {
+                            'message':"Time Limit Exceeded",
+                        'output': resp_json['run_status']['output']
+                        }
+                return JsonResponse(msg,safe=False)
+
             else:
-                output_ = output_[0:(x+1)]
-
-                print(output_)
-
-
-
-
-
-
-
-            print(resp_json)
-            print (string.splitlines())
-            print(output_.splitlines())
-            # print(string.splitlines()[0])
-
-
-            if string.splitlines()==output_.splitlines():
-
-                print("test cases passed")
+                print("Compilation Error")
                 print(resp_json)
-                # if float(time_limit_reached) <= float(question.time_limit):
-
-
-
-                #for dry run by curator
-
-                if request.user == question.contest_of.curator.user:
-                    print('curator visited')
-                    
-                else:
-
-                    #solved r not
-                    solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
-                    if solved_check :
-                        solved_check[0].probs.add(question)
-                    else:
-                        solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
-                        solved_or_not.save()
-                        solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
-                        solved_check.probs.add(question)
-                    
-
-
-
-                    # checking scorecard
-                    scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
-                    scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])[0]
-                    print(scoredcard_check_2)
-                    if scorecard_check:
-                        print("already got marks")
-                    elif scoredcard_check_2:
-                        if question.contest_of.end_time > now:
-                            scoredcard_check_2._ques.add(question)
-                            scoredcard_check_2.score = scoredcard_check_2.score + question.score
-                            scoredcard_check_2.time = now
-                            scoredcard_check_2.save()
-                            scorecards_for_total_points = ScoreCard.objects.filter(prof = Profile.objects.filter(user = request.user)[0])
-                            #adding total points 
-                            total = 0
-                            for scr in scorecards_for_total_points:
-                                total = total + int(scr.score)
-                            prof_of_the_user = Profile.objects.filter(user =request.user)[0]
-                            prof_of_the_user.total_points = total
-                            prof_of_the_user.save()
-                                
-
-
                 msg ={
-                    'message':"Test Cases Passed",
-                    'output': resp_json['run_status']['output']
-                }
-                # else:
-                #     msg ={
-                #         'message':"Time Limit Exceeded",
-                #         'output': resp_json['run_status']['output']
-                #     }
+                        'message':"Compilation Error",
+                    
+                    }
+                return JsonResponse(msg,safe=False)
+                
+                    
+                    
+        if count == len(testCases):
+            print("all passed")
 
+            
+            #for dry run by curator
+
+            if request.user == question.contest_of.curator.user:
+                print('curator visited')
+                
             else:
-                msg= {
-                    'message':"Test Cases Not Passed",
-                    'output':resp_json['run_status']['output']
+                
+
+                #solved r not
+                solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
+                if solved_check :
+                    solved_check[0].probs.add(question)
+                else:
+                    solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
+                    solved_or_not.save()
+                    solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
+                    solved_check.probs.add(question)
+                
+
+
+
+                # checking scorecard
+                scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
+                scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])
+                print(scoredcard_check_2)
+                if scorecard_check:
+                    print("already got marks")
+                elif scoredcard_check_2:
+                    scoredcard_check_2= scoredcard_check_2[0]
+                    if question.contest_of.end_time > now:
+                        scoredcard_check_2._ques.add(question)
+                        scoredcard_check_2.score = scoredcard_check_2.score + question.score
+                        scoredcard_check_2.time = now
+                        scoredcard_check_2.save()
+                        scorecards_for_total_points = ScoreCard.objects.filter(prof = Profile.objects.filter(user = request.user)[0])
+                        #adding total points 
+                        total = 0
+                        for scr in scorecards_for_total_points:
+                            total = total + int(scr.score)
+                        prof_of_the_user = Profile.objects.filter(user =request.user)[0]
+                        prof_of_the_user.total_points = total
+                        prof_of_the_user.save()
+                            
+
+
+            msg ={
+                'message':"Test Cases Passed",
+                'output': resp_json['run_status']['output']
                 }
-
-
-        elif resp_json['run_status']['status']=='TLE':
-            msg = {
-                        'message':"Time Limit Exceeded",
-                       'output': resp_json['run_status']['output']
-                     }
 
         else:
-            print("Compilation Error")
-            print(resp_json)
-            msg ={
-                    'message':"Compilation Error",
-                  
-                }
+            msg= {
+                'message':"Test Cases Not Passed",
+                'output':resp_json['run_status']['output']
+            }
+
+
+            
 
         return JsonResponse(msg,safe=False)
 
 
 @login_required(login_url='/register')
 def problem_setting(request, pk):
+    
     contest = Contest.objects.filter(pk =pk)[0]
-    dsalgos = DsAlgoTopics.objects.all()
-    ques = Question.objects.filter(contest_of = contest).order_by('-curation_time')
-    print(ques)
+    if request.user == contest.curator.user:
+        dsalgos = DsAlgoTopics.objects.all()
+        ques = Question.objects.filter(contest_of = contest).order_by('-curation_time')
+        print(ques)
 
-    print(contest)
+        print(contest)
+        
+
+        if request.method =='POST':
+            # test_case = request.POST.get('test_cases','')
+            # input_case = request.POST.get('input_cases','')
+            score = request.POST.get('score','')
+            description = request.POST.get('description','')
+            time_limit = request.POST.get('time_limit','')
+            difficulty = request.POST.get('difficulty', '')
+            contest_id = request.POST.get('contest_id','')
+            contest_uid = request.POST.get('contest_uid','')
+            title = request.POST.get('title','')
+            category = request.POST.get('category','')
+            dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
+
+            # print(test_case)
+            contest =Contest.objects.filter(pk = contest_id, unique_id = contest_uid)[0]
+            print(contest)
+            question = Question(title=title, description=description, score=score,time_limit=time_limit, difficulty=difficulty, category=dsalgo,contest_of =contest)
+
+            question.save()
+
+        context = {
+            "contest":contest,
+            'dsalgos':dsalgos,
+            'ques':ques,
+        }
+        return render(request,"problem_setting.html",context)
+    else:
+        raise Http404()
+
+
+
+@login_required(login_url='/register')
+def add_test_cases_page(request, pk):
+    question_ = Question.objects.filter(pk =pk)[0]
+    if request.user == question_.contest_of.curator.user:
+        test_cases = Testcase.objects.filter(quest =question_)
+        context= {
+            'test_cases':test_cases,
+            'question':question_
+        }
+        return render(request, "add_test_case_page.html", context)
+    elif request.user == question_.prof_w_c.user :
+        test_cases = Testcase.objects.filter(quest =question_)
+        context= {
+            'test_cases':test_cases,
+            'question':question_
+        }
+        return render(request, "add_test_case_page.html", context)
+
+    else:
+        raise Http404()
     
 
-    if request.method =='POST':
-        test_case = request.POST.get('test_cases','')
-        input_case = request.POST.get('input_cases','')
-        score = request.POST.get('score','')
-        description = request.POST.get('description','')
-        time_limit = request.POST.get('time_limit','')
-        difficulty = request.POST.get('difficulty', '')
-        contest_id = request.POST.get('contest_id','')
-        contest_uid = request.POST.get('contest_uid','')
-        title = request.POST.get('title','')
-        category = request.POST.get('category','')
-        dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
+
+
+@login_required(login_url='/register')
+def add_test_cases(request, pk):
+    if request.method =="POST":
+        question_ = Question.objects.filter(pk = pk)[0]
+        #adding test cases
+        test_case  = request.POST.get("test_cases","")
+        input_case = request.POST.get("input_cases", "")
+        title = request.POST.get("title","")
+
+
+        test_case = Testcase(quest = question_, test_cases= test_case, input_cases =input_case,title=title)
+        test_case.save()
+        contest_pk = question_.contest_of.pk
+        return redirect("/add_test_cases_page/" + str(question_.pk))
 
         
-        contest =Contest.objects.filter(pk = contest_id, unique_id = contest_uid)[0]
-        print(contest)
-        question = Question(title=title, description=description, score=score,time_limit=time_limit, test_cases = test_case, input_cases= input_case,difficulty=difficulty, category=dsalgo,contest_of =contest)
+    else:
+        raise Http404()
+@login_required(login_url='/register')
+def edit_test_case(request,pk):
+    if request.method =="POST":
+        test_cases = request.POST.get("test_cases_edit","")
 
-        question.save()
+        input_cases = request.POST.get("input_cases_edit","")
 
-    context = {
-        "contest":contest,
-        'dsalgos':dsalgos,
-        'ques':ques,
-    }
-    return render(request,"problem_setting.html",context)
+        test_case = Testcase.objects.filter(pk =pk)[0]
+        test_case.test_cases = test_cases
+        test_case.input_cases = input_cases
+        test_case.save()
+        question_ = test_case.quest.pk
+        return redirect("/add_test_cases_page/"+str(question_))
+        
+    else:
+        raise Http404()
 
 @login_required(login_url='/register')
 def normal_problem_setting(request,pk):
@@ -254,8 +308,8 @@ def normal_problem_setting(request,pk):
     
 
     if request.method =='POST':
-        test_case = request.POST.get('test_cases','')
-        input_case = request.POST.get('input_cases','')
+        # test_case = request.POST.get('test_cases','')
+        # input_case = request.POST.get('input_cases','')
         score = 0
         description = request.POST.get('description','')
         time_limit = request.POST.get('time_limit','')
@@ -269,7 +323,7 @@ def normal_problem_setting(request,pk):
         
         contest =not_contest
         print(contest)
-        question = Question(title=title, description=description, score=score,time_limit=time_limit, test_cases = test_case, input_cases= input_case,difficulty=difficulty, category=dsalgo,contest_of =contest)
+        question = Question(title=title, description=description, score=score,time_limit=time_limit,difficulty=difficulty,prof_w_c=prof_, category=dsalgo,contest_of =contest)
 
         question.save()
         return redirect("/profile/" + str(pk))
@@ -288,8 +342,7 @@ def normal_problem_edit(request,pk):
     if request.method == "POST":
         if problem_.prof_w_c == Profile.objects.filter(user = request.user)[0]:
             
-            test_case = request.POST.get('test_cases_edit','')
-            input_case = request.POST.get('input_cases_edit','')
+            
             description = request.POST.get('description_edit','')
             score = 0
             time_limit = request.POST.get('time_limit_edit','')
@@ -300,8 +353,7 @@ def normal_problem_edit(request,pk):
             category = request.POST.get('category_edit','')
             dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
 
-            problem_.test_cases =test_case
-            problem_.input_cases = input_case
+           
             problem_.description =description
             problem_.score = score
             problem_.time_limit =time_limit
@@ -395,8 +447,15 @@ def view_contest(request,pk):
     else:
         solved_or_not =[]
 
-    boomarks_ = Bookmark.objects.filter(owner= Profile.objects.filter(user = request.user)[0])[0]
-    boomark_ques = boomarks_.questions.all()
+    # boomarks_ = Bookmark.objects.filter(owner= Profile.objects.filter(user = request.user)[0])[0]
+    # boomark_ques = boomarks_.questions.all()
+    prof_ = Profile.objects.filter(user = request.user)[0]
+    if Bookmark.objects.filter(owner = prof_):
+            bookmark = Bookmark.objects.filter(owner = prof_)[0]
+            bookmark_ques = bookmark.questions.all()
+    else:
+        bookmark  = None
+        bookmark_ques =[]
 
     
 
@@ -409,7 +468,7 @@ def view_contest(request,pk):
             'questions': questions_,
             'start_time':start_time,
             'solved_or_not':solved_or_not,
-            'bookmarked':boomark_ques
+            'bookmarked':bookmark_ques
             
             
         }
@@ -429,7 +488,7 @@ def view_contest(request,pk):
         'end_time':end_time_,
         'score_cards':score_cards,
         'solved_or_not':solved_or_not,
-        'bookmarked':boomark_ques
+        'bookmarked':bookmark_ques
         }
 
 
@@ -525,8 +584,7 @@ def edit_problem(request,pk):
     problem_ = Question.objects.filter(pk=pk)[0]
     contest_ =problem_.contest_of.pk
     if request.method == "POST":
-        test_case = request.POST.get('test_cases_edit','')
-        input_case = request.POST.get('input_cases_edit','')
+ 
         description = request.POST.get('description_edit','')
         score = request.POST.get('score_edit','')
         time_limit = request.POST.get('time_limit_edit','')
@@ -537,8 +595,7 @@ def edit_problem(request,pk):
         category = request.POST.get('category_edit','')
         dsalgo = DsAlgoTopics.objects.filter(pk = category)[0]
 
-        problem_.test_cases =test_case
-        problem_.input_cases = input_case
+        
         problem_.description =description
         problem_.score = score
         problem_.time_limit =time_limit
@@ -559,8 +616,13 @@ def normal_problems(request):
 
     probs = Question.objects.filter(contest_of = not_contest_).order_by("-curation_time")
     solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
-    boomarks_ = Bookmark.objects.filter(owner= Profile.objects.filter(user = request.user)[0])[0]
-    boomark_ques = boomarks_.questions.all()
+    prof_ =Profile.objects.filter(user = request.user)[0]
+    if Bookmark.objects.filter(owner = prof_):
+            bookmark = Bookmark.objects.filter(owner = prof_)[0]
+            bookmarked_ques = bookmark.questions.all()
+    else:
+        bookmark  = None
+        bookmarked_ques =[]
     if solved_or_not:
 
         
@@ -570,7 +632,7 @@ def normal_problems(request):
     context ={
         'probs':probs,
         'solved_or_not':solved_or_not,
-        'bookmarked':boomark_ques
+        'bookmarked':bookmarked_ques
     }
 
     return render(request, "normal_problems.html",context)
@@ -583,7 +645,10 @@ def profile_visit(request,pk):
     prof_ = Profile.objects.filter(pk=pk)[0]
     if prof_._type == "CU":
         contests_ = Contest.objects.exclude(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')
-        probs_w_c = Question.objects.filter(prof_w_c= Profile.objects.filter(user = request.user)[0],contest_of =Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]).order_by('-curation_time')  
+        probs_w_c = Question.objects.filter(prof_w_c= Profile.objects.filter(user = request.user)[0],contest_of =Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]).order_by('-curation_time') 
+        print(probs_w_c)
+        print(contests_) 
+        print(Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest"))
         context={
             'contests':contests_,
             'prof':prof_,
@@ -609,8 +674,7 @@ def profile_visit(request,pk):
         #for contests participated 
         score_cards = len(ScoreCard.objects.filter(prof = prof_))
         print(score_cards)
-        bookmark = Bookmark.objects.filter(owner = prof_)[0]
-        bookmarked_ques = bookmark.questions.all()
+        
 
 
 
@@ -645,7 +709,13 @@ def profile_visit(request,pk):
 
 
 
-
+        
+        if Bookmark.objects.filter(owner = prof_):
+            bookmark = Bookmark.objects.filter(owner = prof_)[0]
+            bookmarked_ques = bookmark.questions.all()
+        else:
+            bookmark  = None
+            bookmarked_ques =[]
 
         context ={
             "bookmarked_ques":bookmarked_ques,
@@ -743,6 +813,167 @@ def problem_w_c(request,pk):
     }
     return render(request, "problem_without_contest.html",context)
 
+
+
+
+
+
+
+
+"""
+@login_required(login_url='/register')
+def submit_code(request,pk):
+    question =Question.objects.filter(pk=pk)[0]
+    now = datetime.now()
+    now = pytz.utc.localize(now)
+    if request.is_ajax():
+        code_ = request.POST['code_']
+        lang = request.POST['lang']
+        # print(lang)
+        data = {
+            'client_secret': '01f0859bab2c86c1e6a1c1fb549f27a805baad59' ,
+            'async':0,
+            'source':code_,
+            'lang':lang,
+            'time_limit':question.time_limit,
+            'memory_limit': 262144,
+
+        }
+        testCases = Testcase.objects.filter(quest = question)
+        print("tescases")
+        print(testCases)
+        count = 0
+
+        for testCase in testCases:
+           
+            if len(testCase.input_cases)> 0:
+                data["input"] = testCase.input_cases
+                print("input giiven")
+                
+            resp = requests.post(RUN_URL, data=data)
+            resp_json = resp.json()
+            
+            if resp_json['run_status']['status']=='AC':
+                output_ = resp_json['run_status']['output'] 
+                output_ =str(output_)
+                
+                time_limit_reached = resp_json['run_status']['time_used']
+                
+                string =testCase.test_cases
+        
+                string_ = str(string.replace(" ", "").replace("\n",""))
+                output_ =output_.replace(" ", "").replace("\n","")
+                
+            
+               
+                print(''.join(string_.splitlines()))
+                
+                print(''.join(output_.splitlines()))
+
+
+                in_put = ''.join(string_.splitlines())
+                out_put =''.join(output_.splitlines())
+
+
+                if in_put==out_put:
+
+                    print("test cases passed")
+                    count = count +1
+                    print(count)
+
+            elif resp_json['run_status']['status']=='TLE':
+                msg = {
+                            'message':"Time Limit Exceeded",
+                        'output': resp_json['run_status']['output']
+                        }
+                return JsonResponse(msg,safe=False)
+
+            else:
+                print("Compilation Error")
+                print(resp_json)
+                msg ={
+                        'message':"Compilation Error",
+                    
+                    }
+                return JsonResponse(msg,safe=False)
+                
+                    
+                    
+        if count == len(testCases):
+            print("all passed")
+
+            
+            #for dry run by curator
+
+            if request.user == question.contest_of.curator.user:
+                print('curator visited')
+                
+            else:
+                
+
+                #solved r not
+                solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
+                if solved_check :
+                    solved_check[0].probs.add(question)
+                else:
+                    solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
+                    solved_or_not.save()
+                    solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
+                    solved_check.probs.add(question)
+                
+
+
+
+                # checking scorecard
+                scorecard_check = ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0], _ques= question)
+                scoredcard_check_2 =ScoreCard.objects.filter(_contest = question.contest_of , prof = Profile.objects.filter(user =request.user)[0])
+                print(scoredcard_check_2)
+                if scorecard_check:
+                    print("already got marks")
+                elif scoredcard_check_2:
+                    scoredcard_check_2= scoredcard_check_2[0]
+                    if question.contest_of.end_time > now:
+                        scoredcard_check_2._ques.add(question)
+                        scoredcard_check_2.score = scoredcard_check_2.score + question.score
+                        scoredcard_check_2.time = now
+                        scoredcard_check_2.save()
+                        scorecards_for_total_points = ScoreCard.objects.filter(prof = Profile.objects.filter(user = request.user)[0])
+                        #adding total points 
+                        total = 0
+                        for scr in scorecards_for_total_points:
+                            total = total + int(scr.score)
+                        prof_of_the_user = Profile.objects.filter(user =request.user)[0]
+                        prof_of_the_user.total_points = total
+                        prof_of_the_user.save()
+                            
+
+
+            msg ={
+                'message':"Test Cases Passed",
+                'output': resp_json['run_status']['output']
+                }
+
+        else:
+            msg= {
+                'message':"Test Cases Not Passed",
+                'output':resp_json['run_status']['output']
+            }
+
+
+            
+
+        return JsonResponse(msg,safe=False)
+"""
+
+
+
+
+
+
+
+
+
+
 @login_required(login_url='/register')
 def submit_code_w_c(request,pk):
     question =Question.objects.filter(pk=pk)[0]
@@ -760,98 +991,94 @@ def submit_code_w_c(request,pk):
             'memory_limit': 262144,
 
         }
-        if len(question.input_cases)> 0:
-            data["input"] = question.input_cases
-            
-
-        
-
-        
 
 
-        resp = requests.post(RUN_URL, data=data)
-        resp_json = resp.json()
-        
-        if resp_json['run_status']['status']=='AC':
-            output_ = resp_json['run_status']['output'] 
-            time_limit_reached = resp_json['run_status']['time_used']
-            output_ = str(output_)
-            
-            string = question.test_cases
-           
-           
+        testCases = Testcase.objects.filter(quest = question)
+        print("tescases")
+        print(testCases)
+        count = 0
+        for testCase in testCases:
 
-
-
-
-
-            x = len(output_)-2
-            if output_[-2]==" " :
-
-            
-                print(len(output_))
-                # print(output_[0:x])
-                output_ = output_[0:(x)]
-                print(output_)
-            else:
-                output_ = output_[0:(x+1)]
+            if len(testCase.input_cases)> 0:
+                data["input"] = testCase.input_cases
                 
-                print(output_)
+
+            
+
+            
 
 
-
-
-
-
-
-            print(resp_json)
-            print (string.splitlines())
-            print(output_.splitlines())
-            if string.splitlines() == output_.splitlines():
-                print("test cases passed")
+            resp = requests.post(RUN_URL, data=data)
+            resp_json = resp.json()
+            
+            if resp_json['run_status']['status']=='AC':
+                output_ = resp_json['run_status']['output'] 
+                output_ =str(output_)
+                
+                # time_limit_reached = resp_json['run_status']['time_used']
+                
+                string = testCase.test_cases
+        
+                string_ = str(string.replace(" ", "").replace("\n",""))
+                output_ =output_.replace(" ", "").replace("\n","")
+                
+            
                 print(resp_json)
-               
-                #solved r not
-                solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
-                if solved_check :
-                    solved_check[0].probs.add(question)
-                else:
-                    solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
-                    solved_or_not.save()
-                    solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
-                    solved_check.probs.add(question)
+                print(''.join(string_.splitlines()))
+                
+                print(''.join(output_.splitlines()))
 
-                msg ={
-                    'message':"Test Cases Passed",
-                    'output': resp_json['run_status']['output']
-                }
-                # else:
-                #     msg ={
-                #         'message':"Time Limit Exceeded",
-                #         'output': resp_json['run_status']['output']
-                #     }
+
+                in_put = ''.join(string_.splitlines())
+                out_put =''.join(output_.splitlines())
+
+
+                if in_put==out_put:
+                    print("test case passed")
+                    count = count +1
+                    print(count)
+            elif resp_json['run_status']['status']=='TLE':
+                msg = {
+                            'message':"Time Limit Exceeded",
+                        'output': resp_json['run_status']['output']
+                        }
+                return JsonResponse(msg,safe=False)
 
             else:
-                msg= {
-                    'message':"Test Cases Not Passed",
-                    'output':resp_json['run_status']['output']
-                }
+                print("Compilation Error")
+                print(resp_json)
+                msg ={
+                        'message':"Compilation Error",
+                    
+                    }
+                return JsonResponse(msg,safe=False)  
 
-
-        elif resp_json['run_status']['status']=='TLE':
-            msg = {
-                        'message':"Time Limit Exceeded",
-                       'output': resp_json['run_status']['output']
-                     }
-
-        else:
-            print("Compilation Error")
+        if count == len(testCases):
+            print("all passed")
+              
             print(resp_json)
-            msg ={
-                    'message':"Compilation Error",
-                  
-                }
+            
+            #solved r not
+            solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])
+            if solved_check :
+                solved_check[0].probs.add(question)
+            else:
+                solved_or_not = SolvedOrNot(owner =Profile.objects.filter(user =request.user)[0])
+                solved_or_not.save()
+                solved_check = SolvedOrNot.objects.filter(owner =Profile.objects.filter(user =request.user)[0])[0]
+                solved_check.probs.add(question)
 
+            msg ={
+                'message':"Test Cases Passed",
+                'output': resp_json['run_status']['output']
+            }
+        else:
+            msg= {
+                'message':"Test Cases Not Passed",
+                'output':resp_json['run_status']['output']
+            }
         return JsonResponse(msg,safe=False)
+
+    
         
 

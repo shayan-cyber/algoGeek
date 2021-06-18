@@ -23,6 +23,9 @@ urlpatterns =[
     path('normal_problem_edit/<int:pk>', views.normal_problem_edit, name="normal_problem_edit"),
     path('normal_problems', views.normal_problems, name="normal_problems"),
     path('delete_bookmark/<int:bk>/<int:qk>', views.delete_bookmark, name="delete_bookmark"),
+    path("add_test_cases/<int:pk>", views.add_test_cases, name="add_test_cases"),
+    path("add_test_cases_page/<int:pk>", views.add_test_cases_page, name="add_test_cases_page"),
+    path("edit_test_case/<int:pk>", views.edit_test_case, name='edit_test_case'),
     
     
 

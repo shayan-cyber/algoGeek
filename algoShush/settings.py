@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'algoShush.wsgi.application'
 DATABASES={
    'default':{
       'ENGINE':'django.db.backends.postgresql_psycopg2',
-      'NAME':'algoGeek',
+      'NAME':'algogeeknew',
       'USER':'postgres',
       'PASSWORD':env('DATABASE_PASS'),
       'HOST':'localhost',
