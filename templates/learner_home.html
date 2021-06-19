@@ -1,0 +1,311 @@
+{% load humanize %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learner Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <style>
+    body {
+      background-color: #f3f7f7;
+    }
+
+    #problems {
+      box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      border-radius: 0rem;
+      margin-top: 1rem;
+      font-family: OpenSans, Arial, Helvetica, sans-serif;
+      font-style: normal;
+      padding-top: 0.8rem;
+      padding-bottom: 0.5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    #problems:hover {
+      background-color: #f3f7f7;
+    }
+
+    .btn {
+      border-radius: 0rem;
+      /* margin-left: 3rem; */
+      margin-top: 1rem;
+    }
+
+    hr {
+      width: 85%;
+      opacity: 0.1;
+    }
+
+    .card {
+      box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+      -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+    }
+
+    a {
+      text-decoration: none;
+    }
+  </style>
+
+  <body>
+    <!-- Navbar start -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a style="padding: 0.35rem 0rem 0.35rem !important;" class="navbar-brand " href="{% url 'home' %}"><img style="width: 9rem; margin-left: 0.7rem;" src="{% static 'algoGeek.png' %}" alt=""></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+
+            <li class="nav-item">
+              <a
+                class="nav-link disabled"
+                href="#"
+                tabindex="-1"
+                aria-disabled="true"
+                >Disabled</a
+              >
+            </li>
+          </ul>
+          <ul
+            style="margin-right: 6rem !important"
+            class="navbar-nav me-2 mb-2 mb-lg-0"
+          >
+            <li class="nav-item dropdown">
+              <a
+                style="font-weight: 650; font-size: larger"
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <svg
+                  style="margin-right: 0.3rem"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  fill="currentColor"
+                  class="bi bi-person-circle"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+                  />
+                </svg>
+
+                {{request.user.username}}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'profile' request.user.profile.pk %}"
+                    >Profile</a
+                  >
+                </li>
+                <center>
+                  <hr />
+                </center>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <center>
+                  <hr />
+                </center>
+                <li>
+                  <a class="dropdown-item" href="{% url 'log_out' %}">Log out</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Navbar end -->
+
+    <!-- title area start -->
+    <div
+      style="background-color: #ffffff; padding: 1.1rem 1.1rem 1rem"
+      class="container-fluid"
+    >
+      <div class="container">
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Learner</li>
+          </ol>
+        </nav>
+
+        <h1
+          style="
+            margin-top: -0.8rem;
+            font-family: OpenSans, Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: 26px;
+            color: #0e141e;
+          "
+        >
+          Dashboard
+        </h1>
+      </div>
+    </div>
+    <!-- title area end -->
+
+    <div class="container mt-5">
+      <!-- card start -->
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="problems" class="card">
+            <div style="padding: 2rem 2rem 2rem" class="card-body">
+              <h4 style="font-size: 1.9rem" class="card-title">Contests</h4>
+              <p class="card-text">
+                <small style="opacity: 0.6"
+                  >Participate in contests, get better, get hired</small
+                >
+              </p>
+              <a href="{% url 'contests' %}" class="btn btn-outline-primary">All contests</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div id="problems" class="card">
+            <div style="padding: 2rem 2rem 2rem" class="card-body">
+              <h4 style="font-size: 1.9rem" class="card-title">Problems</h4>
+              <p class="card-text">
+                <small style="opacity: 0.6"
+                  >Practice problems, be a better coder</small
+                >
+              </p>
+              <a href="{% url 'normal_problems' %}" class="btn btn-outline-primary"
+                >All practice problems</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br />
+    </div>
+    <div style="max-width: 90vw; " class="container mt-5">
+      <div  class="row">
+        <div class="col-sm-3"></div>
+
+        <div  class="col-sm-6">
+          <div style="border-radius: 1rem; max-width: 90%;" id="problems" class="card">
+            <div
+              style="
+                margin-left: 95%;
+                margin-top: -3rem;
+                width: 5rem;
+                background: white;
+                border-radius: 10rem;
+              
+                padding-left: 0.7rem;
+                padding-right: 1rem;
+                padding-bottom: 1rem;
+                padding-top: 1rem;
+                border: dotted;
+              "
+            >
+              <svg
+              
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="80"
+                height="80"
+                viewBox="0 0 172 172"
+                style="fill: #000000; width: 3rem ;height: 3rem;"
+              >
+                <g
+                  fill="none"
+                  fill-rule="nonzero"
+                  stroke="none"
+                  stroke-width="1"
+                  stroke-linecap="butt"
+                  stroke-linejoin="miter"
+                  stroke-miterlimit="10"
+                  stroke-dasharray=""
+                  stroke-dashoffset="0"
+                  font-family="none"
+                  font-weight="none"
+                  font-size="none"
+                  text-anchor="none"
+                  style="mix-blend-mode: normal"
+                >
+                  <path d="M0,172v-172h172v172z" fill="none"></path>
+                  <g fill="#0d6efd">
+                    <path
+                      d="M151.6002,23.62061c-1.45905,0.06291 -2.91254,0.45238 -4.24541,0.97002h-0.0042c-1.29883,0.50696 -9.64323,3.96401 -21.80654,9.01152c-12.16332,5.04751 -27.97253,11.6186 -43.64668,18.13643c-31.34831,13.03566 -62.15264,25.85879 -62.15264,25.85879l0.13857,-0.05039c0,0 -1.71898,0.56318 -3.43916,1.72588c-0.86009,0.58135 -1.76308,1.32409 -2.47754,2.35576c-0.71446,1.03167 -1.2173,2.44458 -1.02461,3.95986c0.34775,2.73455 2.21164,4.52324 3.7499,5.59756c1.53826,1.07432 3.01504,1.58311 3.01504,1.58311l0.0168,0.0084l30.12939,9.96055c0.49578,1.72548 8.54913,29.7687 10.44766,35.68916c0.99305,3.10018 1.91145,4.82114 2.77149,5.9041c0.43001,0.54148 0.85467,0.92597 1.28076,1.18838c0.18318,0.11281 0.36471,0.18911 0.5417,0.25615c0.02885,0.01096 0.05967,0.03225 0.08818,0.04199c0.06073,0.02073 0.09316,0.02052 0.16797,0.03779c2.83861,1.04997 5.23643,-0.78105 5.23643,-0.78106l0.06719,-0.05039l20.65596,-18.17422l30.54932,24.49824l0.26875,0.11758c4.90242,2.11185 8.95442,0.95167 11.30849,-0.90703c2.35408,-1.8587 3.30899,-4.2916 3.30899,-4.2916l0.07559,-0.18897l22.0375,-111.46826c0.54007,-2.38451 0.59441,-4.38608 0.12598,-6.10566c-0.46843,-1.71958 -1.558,-3.11776 -2.91006,-3.90107c-1.35206,-0.78332 -2.81575,-1.04553 -4.2748,-0.98262zM151.71777,27.99619c0.85577,-0.03682 1.57703,0.08074 2.00303,0.32754c0.42599,0.2468 0.70284,0.52976 0.91543,1.31016c0.21259,0.7804 0.26387,2.09769 -0.17217,4.02285l-0.0084,0.02939l-21.94932,111.03574c-0.03227,0.07433 -0.59774,1.40422 -1.93584,2.46074c-1.34919,1.06527 -3.18551,1.85242 -6.77754,0.36533l-49.10566,-39.38027c-0.41299,-0.43396 -0.98829,-0.67595 -1.5873,-0.66768c-1.17614,-0.01405 -2.1453,0.91956 -2.1752,2.09541l-5.59756,29.99082c-0.28619,-0.65906 -0.59458,-1.43237 -0.92803,-2.47334c-1.73282,-5.40372 -9.52498,-32.46097 -10.29228,-35.12647l77.07246,-49.89932c0.22876,0.98344 1.11098,1.67524 2.12061,1.66289c0.65659,0.00785 1.28078,-0.28475 1.69476,-0.79445c0.41398,-0.5097 0.57237,-1.18063 0.43004,-1.82166c0.05712,-0.65794 0.00203,-1.30497 -0.28555,-1.94844c-0.46401,-1.03823 -1.5625,-1.67033 -2.34316,-1.81826c-1.56132,-0.29586 -2.57832,0.27295 -2.57832,0.27295l-0.21416,0.07978l-78.71016,50.96592l-30.16719,-9.97314l-0.0084,-0.0042c-0.00799,-0.00276 -0.9557,-0.34475 -1.96523,-1.04981c-1.01379,-0.70803 -1.81898,-1.62696 -1.94424,-2.61191c-0.0438,-0.34446 0.02236,-0.57785 0.29395,-0.97002c0.27159,-0.39217 0.77506,-0.85574 1.34795,-1.24297c1.14577,-0.77445 2.41035,-1.21357 2.41035,-1.21357l0.06719,-0.0252l0.07139,-0.02939c0,0 30.80113,-12.82355 62.14844,-25.85879c15.67365,-6.51762 31.48523,-13.08549 43.64668,-18.13223c12.16145,-5.04674 20.84687,-8.63779 21.71836,-8.97793c0.95902,-0.37245 1.94931,-0.56366 2.80508,-0.60049zM127.27832,55.25332l-1.72168,0.86504l-0.34014,1.89805l1.31856,1.40674l0.74326,0.13018l1.72168,-0.86084l0.34014,-1.89805l-1.31436,-1.40674zM121.26084,61.06084l-1.72168,0.86084l-0.34014,1.89805l1.31436,1.40674l0.74746,0.13438l1.72168,-0.86504l0.34014,-1.89385l-1.31855,-1.40674zM115.23916,66.86416l-1.72168,0.86504l-0.34014,1.89385l1.31436,1.40674l0.74746,0.13438l1.72168,-0.86084l0.34014,-1.89805l-1.31436,-1.40674zM109.22168,72.67168l-1.72588,0.86084l-0.33594,1.89805l1.31436,1.40674l0.74746,0.13438l1.72168,-0.86504l0.34014,-1.89385l-1.31856,-1.41094zM103.2,78.475l-1.72168,0.86504l-0.34014,1.89385l1.31436,1.40674l0.74746,0.13437l1.72168,-0.86084l0.34014,-1.89805l-1.31436,-1.40674zM97.17832,84.27832l-1.72168,0.86504l-0.34014,1.89805l1.31856,1.40674l0.74326,0.13018l1.72588,-0.86084l0.33594,-1.89805l-1.31436,-1.40674zM91.16084,90.08584l-1.72168,0.86084l-0.34014,1.89805l1.31436,1.40674l0.74746,0.13437l1.72168,-0.86504l0.34014,-1.89385l-1.31855,-1.40674zM85.13916,95.88916l-1.72168,0.86504l-0.34014,1.89385l1.31855,1.40674l0.74326,0.13438l1.72168,-0.86084l0.34014,-1.89805l-1.31436,-1.40674zM79.12168,101.69668l-1.72588,0.86084l-0.33594,1.89805l1.31436,1.40674l0.74746,0.13437l1.72168,-0.86504l0.34014,-1.89805l-1.31856,-1.40674zM74.55293,113.57207l13.15615,10.54844l-18.09443,15.91504z"
+                    ></path>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <div style="padding: 2rem 2rem 2rem" class="card-body">
+              <h4 style="font-size: 1.9rem" class="card-title">Dicussion</h4>
+              <p class="card-text">
+                <small style="opacity: 0.6"
+                  >Discuss with fellow learners, curators</small
+                >
+              </p>
+              <a href="#" class="btn btn-info"
+                >Go to discussion</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-3"></div>
+      </div>
+
+      <br /><br /><br />
+      <!-- card end -->
+    </div>
+
+
+
+
+
+
+      
+
+    <br /><br />
+  </body>
+</html>

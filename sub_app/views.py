@@ -12,6 +12,11 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from datetime import date,datetime
 import pytz
+from django.core.mail import EmailMessage, message
+from django.conf import settings
+from django.template.loader import render_to_string
+
+
 
 # import datetime
 
@@ -23,7 +28,7 @@ def home(request):
    
     return render(request,"home.html")
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def run_code(request):
     if request.is_ajax():
         code_ = request.POST['code_']
@@ -52,7 +57,7 @@ def run_code(request):
         return HttpResponseForbidden
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def submit_code(request,pk):
     question =Question.objects.filter(pk=pk)[0]
     now = datetime.now()
@@ -196,13 +201,13 @@ def submit_code(request,pk):
         return JsonResponse(msg,safe=False)
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def problem_setting(request, pk):
     
     contest = Contest.objects.filter(pk =pk)[0]
     if request.user == contest.curator.user:
         dsalgos = DsAlgoTopics.objects.all()
-        ques = Question.objects.filter(contest_of = contest).order_by('-curation_time')
+        ques = Question.objects.filter(contest_of = contest)
         print(ques)
 
         print(contest)
@@ -239,7 +244,7 @@ def problem_setting(request, pk):
 
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def add_test_cases_page(request, pk):
     question_ = Question.objects.filter(pk =pk)[0]
     if request.user == question_.contest_of.curator.user:
@@ -263,7 +268,7 @@ def add_test_cases_page(request, pk):
 
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def add_test_cases(request, pk):
     if request.method =="POST":
         question_ = Question.objects.filter(pk = pk)[0]
@@ -281,7 +286,7 @@ def add_test_cases(request, pk):
         
     else:
         raise Http404()
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def edit_test_case(request,pk):
     if request.method =="POST":
         test_cases = request.POST.get("test_cases_edit","")
@@ -298,7 +303,7 @@ def edit_test_case(request,pk):
     else:
         raise Http404()
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def normal_problem_setting(request,pk):
     dsalgos = DsAlgoTopics.objects.all()
     # ques = Question.objects.filter(contest_of = contest).order_by('-curation_time')
@@ -336,7 +341,7 @@ def normal_problem_setting(request,pk):
 
     else:
         raise Http404()
-@login_required(login_url='/register')  
+@login_required(login_url='/')  
 def normal_problem_edit(request,pk):
     problem_ = Question.objects.filter(pk =pk)[0]
     if request.method == "POST":
@@ -370,7 +375,7 @@ def normal_problem_edit(request,pk):
 
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def contests(request):
     contests_ = Contest.objects.exclude(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')
 
@@ -386,15 +391,15 @@ def contests(request):
                 contest_.status = "IA"
                 contest_.save()
                 print(contest_.status)
-    active_contests = Contest.objects.filter(status = "AC").order_by('-curation_time').difference(Contest.objects.filter(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')) 
-    previous_contests = Contest.objects.filter(status ="IA").order_by("-curation_time").difference(Contest.objects.filter(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time'))  
+    active_contests = Contest.objects.filter(status = "AC").difference(Contest.objects.filter(unique_id ="not_a_contest", title="Not A contest")).order_by('-curation_time')
+    previous_contests = Contest.objects.filter(status ="IA").difference(Contest.objects.filter(unique_id ="not_a_contest", title="Not A contest")).order_by('-curation_time')
     context ={
         'active_contests':active_contests,
         'previous_contests': previous_contests,
     }
     return render(request,"contests.html",context)
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def problem(request, pk):
     now = datetime.now()
     now = pytz.utc.localize(now)
@@ -425,7 +430,7 @@ def problem(request, pk):
 
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def view_contest(request,pk):
     contest_ = Contest.objects.filter(pk =pk)[0]
     questions_ = Question.objects.filter(contest_of = contest_)
@@ -496,7 +501,7 @@ def view_contest(request,pk):
     
     return render(request, "view_contest.html", context)
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def add_contest(request):
     if request.method =="POST":
 
@@ -540,7 +545,7 @@ def add_contest(request):
     else:
         raise Http404()
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def edit_contest(request, pk):
     if request.method =="POST":
         title= request.POST.get('title_edit','')
@@ -571,7 +576,7 @@ def edit_contest(request, pk):
         raise Http404()
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def delete_contest(request, pk):
     contest_ = Contest.objects.filter(pk=pk)[0]
     prof_ = contest_.curator
@@ -579,7 +584,7 @@ def delete_contest(request, pk):
         contest_.delete()
     return redirect('/profile/'+ str(prof_.pk))
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def edit_problem(request,pk):
     problem_ = Question.objects.filter(pk=pk)[0]
     contest_ =problem_.contest_of.pk
@@ -610,7 +615,7 @@ def edit_problem(request,pk):
 
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def normal_problems(request):
     not_contest_ = Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]
 
@@ -640,11 +645,11 @@ def normal_problems(request):
 
 
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def profile_visit(request,pk):
     prof_ = Profile.objects.filter(pk=pk)[0]
     if prof_._type == "CU":
-        contests_ = Contest.objects.exclude(unique_id ="not_a_contest", title="Not A contest").order_by('-curation_time')
+        contests_ = Contest.objects.filter(curator = Profile.objects.filter(user = request.user)[0]).order_by('-curation_time')
         probs_w_c = Question.objects.filter(prof_w_c= Profile.objects.filter(user = request.user)[0],contest_of =Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]).order_by('-curation_time') 
         print(probs_w_c)
         print(contests_) 
@@ -698,7 +703,7 @@ def profile_visit(request,pk):
 
 
 
-        elif total_points >400:
+        elif total_points >=400:
             progress = 100
             start_point = 400
             end_point = 0
@@ -729,7 +734,7 @@ def profile_visit(request,pk):
         }
         return render(request, "profile_learner.html",context)
     
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def delete_bookmark(request, bk, qk):
     book_mark =Bookmark.objects.filter(pk = bk)[0]
     if request.user == book_mark.owner.user:
@@ -744,9 +749,122 @@ def delete_bookmark(request, bk, qk):
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect('/contests')
+        prof_ = Profile.objects.filter(user =request.user)
+        if prof_[0]._type =="LR":
+            return redirect("/learner_home")
+        else:
+
+            return redirect('/curator_home')
+        
+    
     else:
         return render(request,"register.html")
+
+
+@login_required(login_url='/')
+def learner_home(request):
+    return render(request, "learner_home.html")
+
+
+@login_required(login_url='/')
+def curator_home(request):
+    prof_ = Profile.objects.filter(user =request.user)[0]
+    context ={
+        'prof':prof_,
+        'type':prof_._type
+    }
+    return render(request, "curator_home.html",context)
+
+
+def register_curator(request):
+    if request.user.is_authenticated:
+        prof_ = Profile.objects.filter(user =request.user)
+        if prof_[0]._type =="CU":
+            return redirect("/curator_home")
+        else:
+
+            return redirect('/learner_home')
+    else:
+        return render(request,"register_curator.html")
+
+
+
+
+"""
+donor_mail = fulldet.email
+        donor = fulldet.user.username
+        donor_id =fulldet.user.pk
+        #email to locator
+        template_locator = render_to_string('Email_templates/email_to_donor.html',{'name':name, 'email':email, 'phone':phone, 'donor':donor, 'donor_id':donor_id})
+        email_locator = EmailMessage(
+            name + ' , Has Requested For Blood Donation',
+            template_locator,
+            settings.EMAIL_HOST_USER,
+            [donor_mail],
+
+            )
+        email_locator.fail_silently = False
+        email_locator.send()
+"""
+
+
+
+def signUp_curator(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        name = request.POST.get('name','')
+        username = request.POST.get('username', '')
+        password = request.POST.get('pass', '')
+        conf_pass = request.POST.get('conf_pass','')
+        usercheck = User.objects.filter(username =username)
+
+        if len(username)>20:
+            messages.warning(request,"User name is too long")
+        elif usercheck:
+            messages.warning(request, "User name already exists")
+        elif password != conf_pass:
+            messages.warning(request, "Passwords Do not Match")
+        else:
+            user_ = User.objects.create_user(
+                first_name =name,
+                password=password,
+                username =username,
+                email = email
+            )
+            user_.save()
+            #email to locator
+            user_det = User.objects.filter(username=username)[0]
+            template_locator = render_to_string('Email_templates/email_to_admin.html',{'name':user_det.first_name, 'email':user_det.email, 'username': user_det.username})
+            email_locator = EmailMessage(
+                name + ' , Has Requested For Curator Role',
+                template_locator,
+                settings.EMAIL_HOST_USER,
+                ["algogeek.mail@gmail.com"],
+
+                )
+            email_locator.fail_silently = False
+            email_locator.send()
+            messages.success(request,"Account Created Successfully, application for curator role sent")
+        # return render(request, "register.html")
+        return redirect('/register_curator')
+    else:
+        raise Http404()
+
+def log_in_curator(request):
+    if request.method =="POST":
+        username = request.POST.get('username_login','')
+        password = request.POST.get('pass_login','')
+        print(username)
+        print(password)
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('/curator_home')
+        else:
+            messages.warning(request, "Invalid Credentials")
+            return redirect('/register_curator')
+
+
 
 def signUp(request):
     if request.method == 'POST':
@@ -785,11 +903,11 @@ def log_in(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request,user)
-            return redirect('/contests')
+            return redirect('/learner_home')
         else:
             messages.warning(request, "Invalid Credentials")
             return redirect('/register')
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def add_to_bookmark(request, pk):
     if request.is_ajax():
         pk_id = request.POST.get('pk','')
@@ -805,7 +923,7 @@ def add_to_bookmark(request, pk):
             bookmark[0].questions.add(question_)
         return JsonResponse({'message':"bookmarks added"},safe=False)
 
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def problem_w_c(request,pk):
     problem_ = Question.objects.filter(pk = pk)[0]
     context ={
@@ -966,15 +1084,7 @@ def submit_code(request,pk):
 """
 
 
-
-
-
-
-
-
-
-
-@login_required(login_url='/register')
+@login_required(login_url='/')
 def submit_code_w_c(request,pk):
     question =Question.objects.filter(pk=pk)[0]
   
@@ -1080,5 +1190,21 @@ def submit_code_w_c(request,pk):
         return JsonResponse(msg,safe=False)
 
     
-        
 
+
+
+
+
+def log_out(request):
+    logout(request)
+    return redirect("/")
+
+
+def delete_prob_w_c(request,pk):
+    question_ = Question.objects.filter(pk=pk)[0]
+    if question_.prof_w_c.user == request.user:
+        prof_pk = question_.prof_w_c.pk
+        question_.delete()
+        return redirect("/profile/"+str(prof_pk))
+    else:
+        raise Http404()

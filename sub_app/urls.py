@@ -12,6 +12,8 @@ urlpatterns =[
     path('register', views.register, name='register'),
     path('signUp', views.signUp, name="signUp"),
     path('log_in',views.log_in, name="log_in"),
+    path('signUp_curator', views.signUp_curator, name="signUp_curator"),
+    path('log_in_curator',views.log_in_curator, name="log_in_curator"),
     path("edit_contest/<int:pk>", views.edit_contest, name='edit_contest'),
     path('delete_contest/<int:pk>', views.delete_contest, name="delete_contest"),
     path('edit_problem/<int:pk>', views.edit_problem, name="edit_problem"),
@@ -26,6 +28,12 @@ urlpatterns =[
     path("add_test_cases/<int:pk>", views.add_test_cases, name="add_test_cases"),
     path("add_test_cases_page/<int:pk>", views.add_test_cases_page, name="add_test_cases_page"),
     path("edit_test_case/<int:pk>", views.edit_test_case, name='edit_test_case'),
+    path('learner_home', views.learner_home, name="learner_home"),
+    path('curator_home', views.curator_home, name="curator_home"),
+    path('register_curator', views.register_curator, name="register_curator"),
+    path('log_out', views.log_out, name="log_out"),
+    path('delete_prob_w_c/<int:pk>', views.delete_prob_w_c, name="delete_prob_w_c")
+
     
     
 

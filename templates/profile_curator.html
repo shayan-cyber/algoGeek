@@ -1,4 +1,8 @@
 {% load humanize %}
+
+{% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -92,50 +96,97 @@
 </style>
 
 <body>
-  <!-- Navbar start -->
-  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">algoShush</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li>
-                <hr class="dropdown-divider" />
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-          <button class="btn btn-outline-light" type="submit">Search</button>
-        </form>
-      </div>
+<!-- Navbar start -->
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a style="padding: 0.35rem 0rem 0.35rem !important;" class="navbar-brand " href="{% url 'home' %}"><img style="width: 9rem; margin-left: 0.7rem;" src="{% static 'algoGeek.png' %}" alt=""></a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link disabled"
+            href="#"
+            tabindex="-1"
+            aria-disabled="true"
+            >Disabled</a
+          >
+        </li>
+      </ul>
+      <ul
+        style="margin-right: 6rem !important"
+        class="navbar-nav me-2 mb-2 mb-lg-0"
+      >
+        <li class="nav-item dropdown">
+          <a
+            style="font-weight: 650; font-size: larger"
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <svg
+              style="margin-right: 0.3rem"
+              xmlns="http://www.w3.org/2000/svg"
+              width="25"
+              height="25"
+              fill="currentColor"
+              class="bi bi-person-circle"
+              viewBox="0 0 16 16"
+            >
+              <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+              <path
+                fill-rule="evenodd"
+                d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+              />
+            </svg>
+
+            {{request.user.username}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>
+              <a
+                class="dropdown-item"
+                href="{% url 'profile' request.user.profile.pk %}"
+                >Profile</a
+              >
+            </li>
+            <center>
+              <hr />
+            </center>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <center>
+              <hr />
+            </center>
+            <li>
+              <a class="dropdown-item" href="{% url 'log_out' %}">Log out</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
-  </nav>
-  <!-- Navbar end -->
+  </div>
+</nav>
+<!-- Navbar end -->
 
 
   <!-- messages start -->
@@ -218,6 +269,8 @@
    
         <div class="row">
 
+          
+          {% if contests %}
 
           {% for contest in contests %}
           <div class="col-sm-6 mt-5">
@@ -334,6 +387,22 @@
           </div>
 
           {% endfor %}
+          {% else %}
+          <div class="container">
+            <div class="alert alert-primary d-flex align-items-center mt-5" role="alert">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              <div>
+                Sorry, No Contests Yet
+              </div>
+            </div>
+          </div>
+          
+            
+          {% endif %}
+            
+          
 
 
 
@@ -488,15 +557,16 @@
     <div class="row mt-2">
 
 
-      {% for i in problems_w_c %}
+{% if problems_w_c %}
+{% for i in problems_w_c %}
     <div class="com-sm-12">
 
       <div style="width: 100%" class="alert alert-info" role="alert">
-        <div class="row">
-          <div class="col-4">
+        <div class="row ">
+          <div class="col-sm-4 mt-2 mb-2">
             <span><strong>{{forloop.counter}}.</strong> </span>{{i.title|truncatechars:15}}
           </div>
-          <div class="col-3">
+          <div class="col-sm-2 mt-2">
             <a style="border-radius: 0.1rem" href="#" class="btn btn-outline-primary" data-bs-toggle="modal"
               data-bs-target="#editProblem{{i.pk}}">Edit
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -508,7 +578,7 @@
               </svg>
             </a>
           </div>
-          <div class="col-3">
+          <div class="col-sm-2 mt-2">
             <a style="border-radius: 0.1rem" href="{% url 'add_test_cases_page' i.pk %}" class="btn btn-outline-primary" >Add test case
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -520,11 +590,17 @@
             </a>
             <br />
           </div>
-          <div class="col-2">
+          <div class="col-sm-2 mt-2">
             <a style="border-radius: 0.1rem" href="{% url 'problem_w_c' i.pk %}" class="btn btn-primary" >Test
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning" viewBox="0 0 16 16">
                 <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z"/>
               </svg>
+            </a>
+  
+          </div>
+          <div class="col-sm-2 mt-2">
+            <a style="border-radius: 0.1rem" href="{% url 'delete_prob_w_c' i.pk %}" class="btn btn-danger" >Delete
+              
             </a>
   
           </div>
@@ -613,6 +689,19 @@
     <!-- modal end -->
 
     {% endfor %}
+{% else %}
+<div class="alert alert-primary d-flex align-items-center mt-5" role="alert">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+  </svg>
+  <div>
+    Sorry, No Problems yet
+  </div>
+</div>
+  
+{% endif %}
+  
+      
 
 
 

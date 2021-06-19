@@ -49,11 +49,11 @@
             </div>
             <div class="col-sm-3">
 
-                <a style="text-decoration: none;  font-size: 1.05rem; padding-right: 1rem;" href="#">Login</a>
+                <a style="text-decoration: none;  font-size: 1.05rem; padding-right: 1rem;" href="{% url 'register' %}">Login</a>
 
-                <button
+                <a
                     style=" border-radius: 0.15rem; padding-left: 1.4rem; padding-right: 1.4rem; padding-bottom: 0.5rem; padding-top: 0.35rem; font-size: 0.95rem;"
-                    type="button" class="btn btn-outline-dark">Sign Up</button>
+                    href="{% url 'register' %}" class="btn btn-outline-dark">Sign Up</a>
             </div>
 
         </div>
@@ -73,8 +73,8 @@
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga esse alias autem ipsam aut
                             aperiam voluptate sunt aliquid, ea et.</p>
 
-                        <button style="border-radius: 0;" type="button" class="btn btn-primary btn-lg mt-1">Sign
-                            Up</button>
+                        <a href="{% url 'register_curator' %}" style="border-radius: 0;" type="button" class="btn btn-primary btn-lg mt-1">Sign
+                            Up</a>
 
                         <br><br><br><br>
                         <small style="margin-top: 10rem;">Copyright @ 2021 | Privacy & Policy</small>
