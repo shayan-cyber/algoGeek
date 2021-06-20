@@ -447,16 +447,14 @@ def view_contest(request,pk):
     now = ist.localize(datetime.now())
     
     
-    # timezone.activate(pytz.timezone("Asia/Kolkata"))
-    current_tz = timezone.get_current_timezone()
-    paris = ist.localize(datetime.now())
-    local = current_tz.normalize(paris.astimezone(current_tz))
-    # local.datetime()
-    now1 = local.now()
+    ist= pytz.timezone('Asia/Kolkata')
 
 
-    
-    now2 = ist.localize(datetime.now())
+    fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+
+    loc_dt = ist.localize(datetime.now())
+    loc_dt = loc_dt.strftime(fmt)
+    now1 =loc_dt
 
     # new_york = new_york_tz.normalize(paris.astimezone(new_york_tz))
     # paris == new_york, paris.date() == new_york.date()
