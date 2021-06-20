@@ -15,8 +15,8 @@ import pytz
 from django.core.mail import EmailMessage, message
 from django.conf import settings
 from django.template.loader import render_to_string
-
-
+# from dateutil.tz import gettz
+IST = pytz.timezone('Asia/Kolkata')
 
 # import datetime
 
@@ -60,7 +60,7 @@ def run_code(request):
 @login_required(login_url='/')
 def submit_code(request,pk):
     question =Question.objects.filter(pk=pk)[0]
-    now = datetime.now()
+    now = datetime.now(IST)
     now = pytz.utc.localize(now)
     if request.is_ajax():
         code_ = request.POST['code_']
@@ -383,7 +383,7 @@ def contests(request):
 
     for contest_ in contests_:
         if contest_.status =="AC":
-            now = datetime.now()
+            now = datetime.now(IST)
             now = pytz.utc.localize(now)
            
             if now > contest_.end_time:
@@ -401,7 +401,7 @@ def contests(request):
 
 @login_required(login_url='/')
 def problem(request, pk):
-    now = datetime.now()
+    now = datetime.now(IST)
     now = pytz.utc.localize(now)
     
     question = Question.objects.filter(pk =pk)[0]
@@ -435,7 +435,7 @@ def view_contest(request,pk):
     contest_ = Contest.objects.filter(pk =pk)[0]
     questions_ = Question.objects.filter(contest_of = contest_)
     end_time_ = str(contest_.end_time)
-    now = datetime.now()
+    now = datetime.now(IST)
     now = pytz.utc.localize(now)
     # print(end_time_)
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
