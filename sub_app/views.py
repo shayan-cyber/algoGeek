@@ -458,7 +458,7 @@ def view_contest(request,pk):
 
 
     utc_now = pytz.utc.localize(datetime.utcnow())
-    pst_now = utc_now.astimezone(pytz.timezone("Asia/Kolkata'"))
+    pst_now = utc_now.astimezone(pytz.timezone("Asia/Kolkata"))
     now2 = pst_now
 
     # new_york = new_york_tz.normalize(paris.astimezone(new_york_tz))
