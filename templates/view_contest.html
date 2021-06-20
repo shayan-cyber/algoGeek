@@ -388,13 +388,25 @@
                 {% elif start_time %}
                 <div class="container">
                     <div class="row mt-5">
+                        <div id="text_notify" class="text_notify">
+                            <center>
+                                <h4>The Contest Has Not Started Yet</h4>
+                            </center>
+                            <center>
+                                <p>Just Wait A while</p>
+                            </center>
 
-                        <center>
-                            <h4>The Contest Has Not Started Yet</h4>
-                        </center>
-                        <center>
-                            <p>Just Wait A while</p>
-                        </center>
+                        </div>
+                        <div style="display: none;" id="text_notify_up" class="text_notify">
+                            <center>
+                                <h4>The Contest Has  Started </h4>
+                            </center>
+                            <center>
+                                <p>Click the link bellow</p>
+                            </center>
+
+                        </div>
+                        
                         <div class="col-4"></div>
                         <div class="col-4">
                             <div class="row">
@@ -454,7 +466,7 @@
                                             {% elif x.prof.total_points >= 50  %}
                                             <a style="color: blue;" href="{% url 'profile' x.prof.pk %}"><strong style="font-weight: 700;">{{x.prof.user.username}}</strong></a>
                                             {% else %}
-                                            <a href="{% url 'profile' x.prof.pk %}">{{x.prof.user.username}}</a>
+                                            <a style="color: black;" href="{% url 'profile' x.prof.pk %}">{{x.prof.user.username}}</a>
                                                 
                                             {% endif %}
                                                 
@@ -520,7 +532,7 @@
 
     {% if end_time %}
     <script>
-
+         
         // Set the date we're counting down to
         var countDownDate = new Date(document.getElementById("end_time").innerHTML).getTime();
         console.log(countDownDate);
@@ -553,6 +565,8 @@
             if (distance < 0) {
                 clearInterval(x);
                 document.getElementById("demo").innerHTML = "EXPIRED";
+                document.getElementById('text_notify').style.display ='none';
+                document.getElementById('text_notify_up').style.display ='block';
                 // document.getElementById("wait").innerHTML = "<a class='btn btn-primary' href='#'' role='button'>Link</a>"
             }
         }, 1000);
