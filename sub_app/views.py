@@ -442,7 +442,7 @@ def view_contest(request,pk):
     end_time_ = str(contest_.end_time)
     ist = pytz.timezone('Asia/Kolkata')
     # utc = pytz.utc
-    local_datetime = ist.localize(datetime.now())
+    local_datetime = ist.localize(datetime.now(IST))
     now = local_datetime
     # print(end_time_)
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
@@ -482,6 +482,7 @@ def view_contest(request,pk):
             'solved_or_not':solved_or_not,
             'bookmarked':bookmark_ques,
             'now':now,
+            
             
             
         }
