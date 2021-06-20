@@ -451,8 +451,8 @@ def view_contest(request,pk):
     current_tz = timezone.get_current_timezone()
     paris = ist.localize(datetime.now())
     local = current_tz.normalize(paris.astimezone(current_tz))
-    local.datetime()
-    now1 = local.datetime()
+    # local.datetime()
+    now1 = local.now()
 
 
     
