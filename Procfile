@@ -1,0 +1,1 @@
+web: gunicorn algoShush.wsgi --log-file -
