@@ -61,10 +61,17 @@ def run_code(request):
 @login_required(login_url='/')
 def submit_code(request,pk):
     question =Question.objects.filter(pk=pk)[0]
-    ist = pytz.timezone('Asia/Kolkata')
-    # utc = pytz.utc
-    local_datetime = ist.localize(datetime.now())
-    now = local_datetime
+    UTC = pytz.utc
+    
+    timeZ_Kl = pytz.timezone('Asia/Kolkata') 
+
+    
+    dt_Kl = datetime.now(timeZ_Kl)
+
+    
+    utc_Kl = dt_Kl.astimezone(UTC)
+    now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
+    now = now2
     if request.is_ajax():
         code_ = request.POST['code_']
         lang = request.POST['lang']
@@ -386,10 +393,17 @@ def contests(request):
 
     for contest_ in contests_:
         if contest_.status =="AC":
-            ist = pytz.timezone('Asia/Kolkata')
+            UTC = pytz.utc
     
-            local_datetime = ist.localize(datetime.now())
-            now = local_datetime
+            timeZ_Kl = pytz.timezone('Asia/Kolkata') 
+
+            
+            dt_Kl = datetime.now(timeZ_Kl)
+
+            
+            utc_Kl = dt_Kl.astimezone(UTC)
+            now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
+            now = now2
            
             if now > contest_.end_time:
                 print("done")
@@ -406,10 +420,17 @@ def contests(request):
 
 @login_required(login_url='/')
 def problem(request, pk):
-    ist = pytz.timezone('Asia/Kolkata')
-    # utc = pytz.utc
-    local_datetime = ist.localize(datetime.now())
-    now = local_datetime
+    UTC = pytz.utc
+    
+    timeZ_Kl = pytz.timezone('Asia/Kolkata') 
+
+    
+    dt_Kl = datetime.now(timeZ_Kl)
+
+    
+    utc_Kl = dt_Kl.astimezone(UTC)
+    now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
+    now = now2
     question = Question.objects.filter(pk =pk)[0]
 
 
@@ -441,24 +462,6 @@ def view_contest(request,pk):
     contest_ = Contest.objects.filter(pk =pk)[0]
     questions_ = Question.objects.filter(contest_of = contest_)
     end_time_ = str(contest_.end_time)
-    ist = pytz.timezone('Asia/Kolkata')
-    # utc = pytz.utc
-    # local_datetime = ist.localize(datetime.now(IST))
-    now = ist.localize(datetime.now())
-    
-    
-    ist= pytz.timezone('Asia/Kolkata')
-
-
-    fmt = '%Y-%m-%d %H:%M:%S %Z%z'
-
-    loc_dt = ist.localize(datetime.now())
-    loc_dt = loc_dt.strftime(fmt)
-    now1 =loc_dt
-
-
-   
-    
     UTC = pytz.utc
     
     timeZ_Kl = pytz.timezone('Asia/Kolkata') 
@@ -468,7 +471,8 @@ def view_contest(request,pk):
 
     
     utc_Kl = dt_Kl.astimezone(UTC)
-    now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S %Z %z')
+    now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
+    now = now2
 
     # new_york = new_york_tz.normalize(paris.astimezone(new_york_tz))
     # paris == new_york, paris.date() == new_york.date()
