@@ -15,6 +15,7 @@ import pytz
 from django.core.mail import EmailMessage, message
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.utils import timezone
 # from dateutil.tz import gettz
 IST = pytz.timezone('Asia/Kolkata')
 
@@ -444,8 +445,14 @@ def view_contest(request,pk):
     # utc = pytz.utc
     # local_datetime = ist.localize(datetime.now(IST))
     now = ist.localize(datetime.now())
-    now1 = datetime.now()
-
+    
+    
+    # timezone.activate(pytz.timezone("Asia/Kolkata"))
+    current_tz = timezone.get_current_timezone()
+    paris = ist.localize(datetime.now())
+    local = current_tz.normalize(paris.astimezone(current_tz))
+    local.datetime()
+    now1 = local.datetime()
 
 
     
