@@ -443,8 +443,16 @@ def view_contest(request,pk):
     ist = pytz.timezone('Asia/Kolkata')
     # utc = pytz.utc
     # local_datetime = ist.localize(datetime.now(IST))
-    now = datetime.now(ist)
+    now = ist.localize(datetime.now())
     now1 = datetime.now()
+
+
+
+    
+    now2 = ist.localize(datetime.now())
+
+    # new_york = new_york_tz.normalize(paris.astimezone(new_york_tz))
+    # paris == new_york, paris.date() == new_york.date()
     # print(end_time_)
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
     # score_cards = score_cards.order_by("time")
