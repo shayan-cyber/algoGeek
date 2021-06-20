@@ -71,7 +71,7 @@ def submit_code(request,pk):
     
     utc_Kl = dt_Kl.astimezone(UTC)
     now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
-    now = now2
+    now = datetime.strptime(now2, '%Y-%m-%d %H:%M:%S')
     if request.is_ajax():
         code_ = request.POST['code_']
         lang = request.POST['lang']
@@ -178,7 +178,9 @@ def submit_code(request,pk):
                     print("already got marks")
                 elif scoredcard_check_2:
                     scoredcard_check_2= scoredcard_check_2[0]
-                    if question.contest_of.end_time > now:
+                    endtime = str(question.contest_of.end_time)
+                    endtime = endtime[:19]
+                    if datetime.strptime(endtime, '%Y-%m-%d %H:%M:%S')  > now:
                         scoredcard_check_2._ques.add(question)
                         scoredcard_check_2.score = scoredcard_check_2.score + question.score
                         scoredcard_check_2.time = now
@@ -403,9 +405,10 @@ def contests(request):
             
             utc_Kl = dt_Kl.astimezone(UTC)
             now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
-            now = now2
-           
-            if now > contest_.end_time:
+            now = datetime.strptime(now2, '%Y-%m-%d %H:%M:%S')
+            endtime = str(contest_.end_time)
+            endtime = endtime[:19]
+            if now > datetime.strptime(endtime, '%Y-%m-%d %H:%M:%S'):
                 print("done")
                 contest_.status = "IA"
                 contest_.save()
@@ -430,7 +433,7 @@ def problem(request, pk):
     
     utc_Kl = dt_Kl.astimezone(UTC)
     now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
-    now = now2
+    now = datetime.strptime(now2, '%Y-%m-%d %H:%M:%S')
     question = Question.objects.filter(pk =pk)[0]
 
 
@@ -444,8 +447,10 @@ def problem(request, pk):
         return render(request,"problem.html", context)
     else:
         
+        starttime = str(question.contest_of.start_time)
+        starttime = starttime[:19]
 
-        if question.contest_of.start_time < now:
+        if datetime.strptime(starttime, '%Y-%m-%d %H:%M:%S') < now:
             end_time= str(question.contest_of.end_time)
             context = {
                 'question':question,
@@ -472,14 +477,11 @@ def view_contest(request,pk):
     
     utc_Kl = dt_Kl.astimezone(UTC)
     now2 = dt_Kl.strftime('%Y-%m-%d %H:%M:%S')
-    now = now2
+    now = datetime.strptime(now2, '%Y-%m-%d %H:%M:%S')
 
-    # new_york = new_york_tz.normalize(paris.astimezone(new_york_tz))
-    # paris == new_york, paris.date() == new_york.date()
-    # print(end_time_)
+    
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
-    # score_cards = score_cards.order_by("time")
-    #checking for solved ques
+   
    
     scr_crd = ScoreCard.objects.filter(_contest = contest_, prof = Profile.objects.filter(user = request.user)[0])
     
@@ -491,8 +493,7 @@ def view_contest(request,pk):
     else:
         solved_or_not =[]
 
-    # boomarks_ = Bookmark.objects.filter(owner= Profile.objects.filter(user = request.user)[0])[0]
-    # boomark_ques = boomarks_.questions.all()
+
     prof_ = Profile.objects.filter(user = request.user)[0]
     if Bookmark.objects.filter(owner = prof_):
             bookmark = Bookmark.objects.filter(owner = prof_)[0]
@@ -503,8 +504,9 @@ def view_contest(request,pk):
 
     
 
-
-    if contest_.start_time > now:
+    starttime = str(contest_.start_time)
+    starttime = starttime[:19]
+    if datetime.strptime(starttime, '%Y-%m-%d %H:%M:%S') > now:
         
         start_time = str(contest_.start_time)
         context = {
@@ -514,7 +516,7 @@ def view_contest(request,pk):
             'solved_or_not':solved_or_not,
             'bookmarked':bookmark_ques,
             'now':now,
-            'now1':now1,
+            
             "now2":now2,
             
             
@@ -538,7 +540,7 @@ def view_contest(request,pk):
         'solved_or_not':solved_or_not,
         'bookmarked':bookmark_ques,
         'now':now,
-        'now1':now1,
+      
         "now2":now2
         }
 
