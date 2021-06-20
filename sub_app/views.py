@@ -480,7 +480,8 @@ def view_contest(request,pk):
             'questions': questions_,
             'start_time':start_time,
             'solved_or_not':solved_or_not,
-            'bookmarked':bookmark_ques
+            'bookmarked':bookmark_ques,
+            'now':now,
             
             
         }
@@ -500,7 +501,8 @@ def view_contest(request,pk):
         'end_time':end_time_,
         'score_cards':score_cards,
         'solved_or_not':solved_or_not,
-        'bookmarked':bookmark_ques
+        'bookmarked':bookmark_ques,
+        'now':now,
         }
 
 
