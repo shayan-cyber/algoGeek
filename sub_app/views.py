@@ -60,8 +60,10 @@ def run_code(request):
 @login_required(login_url='/')
 def submit_code(request,pk):
     question =Question.objects.filter(pk=pk)[0]
-    now = datetime.now(IST)
-    now = pytz.utc.localize(now)
+    ist = pytz.timezone('Asia/Kolkata')
+    # utc = pytz.utc
+    local_datetime = ist.localize(datetime.now())
+    now = local_datetime
     if request.is_ajax():
         code_ = request.POST['code_']
         lang = request.POST['lang']
@@ -383,8 +385,10 @@ def contests(request):
 
     for contest_ in contests_:
         if contest_.status =="AC":
-            now = datetime.now(IST)
-            now = pytz.utc.localize(now)
+            ist = pytz.timezone('Asia/Kolkata')
+    
+            local_datetime = ist.localize(datetime.now())
+            now = local_datetime
            
             if now > contest_.end_time:
                 print("done")
@@ -401,9 +405,10 @@ def contests(request):
 
 @login_required(login_url='/')
 def problem(request, pk):
-    now = datetime.now(IST)
-    now = pytz.utc.localize(now)
-    
+    ist = pytz.timezone('Asia/Kolkata')
+    # utc = pytz.utc
+    local_datetime = ist.localize(datetime.now())
+    now = local_datetime
     question = Question.objects.filter(pk =pk)[0]
 
 
@@ -435,8 +440,10 @@ def view_contest(request,pk):
     contest_ = Contest.objects.filter(pk =pk)[0]
     questions_ = Question.objects.filter(contest_of = contest_)
     end_time_ = str(contest_.end_time)
-    now = datetime.now(IST)
-    now = pytz.utc.localize(now)
+    ist = pytz.timezone('Asia/Kolkata')
+    # utc = pytz.utc
+    local_datetime = ist.localize(datetime.now())
+    now = local_datetime
     # print(end_time_)
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
     # score_cards = score_cards.order_by("time")
