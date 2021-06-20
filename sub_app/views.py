@@ -442,8 +442,8 @@ def view_contest(request,pk):
     end_time_ = str(contest_.end_time)
     ist = pytz.timezone('Asia/Kolkata')
     # utc = pytz.utc
-    local_datetime = ist.localize(datetime.now(IST))
-    now = local_datetime
+    # local_datetime = ist.localize(datetime.now(IST))
+    now = datetime.now(IST)
     # print(end_time_)
     score_cards = ScoreCard.objects.filter(_contest =contest_).order_by('-score')
     # score_cards = score_cards.order_by("time")
