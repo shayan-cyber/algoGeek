@@ -456,6 +456,11 @@ def view_contest(request,pk):
     loc_dt = loc_dt.strftime(fmt)
     now1 =loc_dt
 
+
+    utc_now = pytz.utc.localize(datetime.utcnow())
+    pst_now = utc_now.astimezone(pytz.timezone("Asia/Kolkata'"))
+    now2 = pst_now
+
     # new_york = new_york_tz.normalize(paris.astimezone(new_york_tz))
     # paris == new_york, paris.date() == new_york.date()
     # print(end_time_)
@@ -496,7 +501,8 @@ def view_contest(request,pk):
             'solved_or_not':solved_or_not,
             'bookmarked':bookmark_ques,
             'now':now,
-            'now1':now1
+            'now1':now1,
+            "now2":now2,
             
             
             
@@ -519,7 +525,8 @@ def view_contest(request,pk):
         'solved_or_not':solved_or_not,
         'bookmarked':bookmark_ques,
         'now':now,
-        'now1':now1
+        'now1':now1,
+        "now2":now2
         }
 
 
