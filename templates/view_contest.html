@@ -565,8 +565,7 @@
             if (distance < 0) {
                 clearInterval(x);
                 document.getElementById("demo").innerHTML = "EXPIRED";
-                document.getElementById('text_notify').style.display ='none';
-                document.getElementById('text_notify_up').style.display ='block';
+                
                 // document.getElementById("wait").innerHTML = "<a class='btn btn-primary' href='#'' role='button'>Link</a>"
             }
         }, 1000);
@@ -613,6 +612,8 @@
                 // document.getElementById("demo").innerHTML = "EXPIRED";
                 document.getElementById("wait").innerHTML = "<a  class='btn btn-primary mb-2' href='/view_contest/" + pk + "'" + "role='button'>Link</a>";
                 document.getElementById('wait').style.marginBottom = "0rem";
+                document.getElementById('text_notify').style.display ='none';
+                document.getElementById('text_notify_up').style.display ='block';
             }
         }, 1000);
     </script>
