@@ -32,7 +32,9 @@ urlpatterns =[
     path('curator_home', views.curator_home, name="curator_home"),
     path('register_curator', views.register_curator, name="register_curator"),
     path('log_out', views.log_out, name="log_out"),
-    path('delete_prob_w_c/<int:pk>', views.delete_prob_w_c, name="delete_prob_w_c")
+    path('delete_prob_w_c/<int:pk>', views.delete_prob_w_c, name="delete_prob_w_c"),
+    path('searching', views.searching,name ="searching" ),
+    path("normal_problems_filtered", views.normal_problems_filtered, name="normal_problems_filtered")
 
     
     

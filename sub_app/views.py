@@ -634,14 +634,50 @@ def normal_problems(request):
         solved_or_not = solved_or_not[0].probs.all()
     else:
         solved_or_not =[]
+    dsalgos = DsAlgoTopics.objects.all()
     context ={
         'probs':probs,
         'solved_or_not':solved_or_not,
-        'bookmarked':bookmarked_ques
+        'bookmarked':bookmarked_ques,
+        'dsalgos':dsalgos
     }
 
     return render(request, "normal_problems.html",context)
     
+@login_required(login_url='/')
+def normal_problems_filtered(request):
+
+    if request.method == "GET":
+        filter_text = request.GET.get('filter_text', "")
+        not_contest_ = Contest.objects.filter(unique_id = "not_a_contest",title="Not A contest")[0]
+
+        probs = Question.objects.filter(contest_of = not_contest_, category = DsAlgoTopics.objects.filter(name=filter_text)[0]).order_by("-curation_time")
+        solved_or_not = SolvedOrNot.objects.filter(owner= Profile.objects.filter(user = request.user)[0])
+        prof_ =Profile.objects.filter(user = request.user)[0]
+        if Bookmark.objects.filter(owner = prof_):
+                bookmark = Bookmark.objects.filter(owner = prof_)[0]
+                bookmarked_ques = bookmark.questions.all()
+        else:
+            bookmark  = None
+            bookmarked_ques =[]
+        if solved_or_not:
+
+            
+            solved_or_not = solved_or_not[0].probs.all()
+        else:
+            solved_or_not =[]
+        dsalgos = DsAlgoTopics.objects.all()
+        context ={
+            'probs':probs,
+            'solved_or_not':solved_or_not,
+            'bookmarked':bookmarked_ques,
+            'dsalgos':dsalgos,
+            'filter_text':filter_text
+        }
+
+        return render(request, "normal_problems_filtered.html",context)
+    else:
+        raise Http404()
 
 
 
@@ -1207,4 +1243,22 @@ def delete_prob_w_c(request,pk):
         question_.delete()
         return redirect("/profile/"+str(prof_pk))
     else:
+ 
         raise Http404()
+
+@login_required(login_url='/')
+def searching(request):
+    if request.method =="GET":
+        search_text = request.GET.get("search_text","")
+        search_results_ques = Question.objects.filter(title__icontains = search_text, contest_of = Contest.objects.filter(unique_id="not_a_contest")[0])
+        
+        search_results_contests =Contest.objects.filter(title__icontains = search_text).difference(Contest.objects.filter(unique_id="not_a_contest"))
+        context ={
+            'questions':search_results_ques,
+            'contests':search_results_contests
+
+        }
+        return render(request,"searching.html",context)
+    else:
+        raise Http404()
+
