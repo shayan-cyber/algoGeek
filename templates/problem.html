@@ -124,7 +124,10 @@
               <a style="font-size: large;" class="nav-link active" aria-current="page" href="{% url 'normal_problems' %}">Practice</a>
             </li>
 
-            
+            <li class="nav-item">
+              <a style="font-size: large" class="nav-link active" aria-current="page"
+                  href="{% url 'team_home' %}">Discussion</a>
+          </li>
           </ul>
           <form method="GET" action="{% url 'searching' %}"  style="width: 50%; height: 3.5rem; margin-right: 1rem; ;" class="d-flex">{% csrf_token %}
             <input style="height: 3rem; margin-top: 0.5rem;" class="form-control me-2" name="search_text" type="search" placeholder="Search" aria-label="Search">

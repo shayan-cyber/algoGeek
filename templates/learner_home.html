@@ -91,7 +91,10 @@
             <a style="font-size: large;" class="nav-link active" aria-current="page" href="{% url 'normal_problems' %}">Practice</a>
           </li>
 
-          
+          <li class="nav-item">
+            <a style="font-size: large" class="nav-link active" aria-current="page"
+                href="{% url 'team_home' %}">Discussion</a>
+        </li>
         </ul>
         <form method="GET" action="{% url 'searching' %}"  style="width: 50%; height: 3.5rem; margin-right: 1rem; ;" class="d-flex">{% csrf_token %}
           <input style="height: 3rem; margin-top: 0.5rem;" class="form-control me-2" name="search_text" type="search" placeholder="Search" aria-label="Search">
@@ -278,13 +281,13 @@
               </svg>
             </div>
             <div style="padding: 2rem 2rem 2rem" class="card-body">
-              <h4 style="font-size: 1.9rem" class="card-title">Dicussion</h4>
+              <h4 style="font-size: 1.9rem" class="card-title">Discussion</h4>
               <p class="card-text">
                 <small style="opacity: 0.6"
                   >Discuss with fellow learners, curators</small
                 >
               </p>
-              <a href="#" class="btn btn-info"
+              <a href="{% url 'team_home' %}" class="btn btn-info"
                 >Go to discussion</a
               >
             </div>
