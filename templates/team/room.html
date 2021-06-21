@@ -1,0 +1,266 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Room : {{room.name}}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<style>
+    body {
+        background-color: #f3f7f7;
+    }
+
+    .btn {
+        border-radius: 0rem;
+        /* margin-left: 3rem; */
+    }
+
+    hr {
+        width: 85%;
+        opacity: 0.1;
+    }
+
+    .card {
+        box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 2px 1px 23px 0px rgba(0, 0, 0, 0.19);
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+<body>
+    <!-- Navbar start -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a style="padding: 0.35rem 0rem 0.35rem !important" class="navbar-brand" href="{% url 'home' %}"><img
+                    style="width: 9rem; margin-left: 0.7rem" src="{% static 'algoGeek.png' %}" alt="" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a style="font-size: large" class="nav-link active" aria-current="page"
+                            href="{% url 'contests' %}">Contests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="font-size: large" class="nav-link active" aria-current="page"
+                            href="{% url 'normal_problems' %}">Practice</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="font-size: large" class="nav-link active" aria-current="page"
+                            href="{% url 'team_home' %}">Discussion</a>
+                    </li>
+                </ul>
+                <form method="GET" action="{% url 'searching' %}"
+                    style="width: 50%; height: 3.5rem; margin-right: 1rem ;" class="d-flex">
+                    {% csrf_token %}
+                    <input style="height: 3rem; margin-top: 0.5rem" class="form-control me-2" name="search_text"
+                        type="search" placeholder="Search" aria-label="Search" />
+                    <button style="height: 2.9rem; margin-top: 0.5rem" class="btn btn-outline-light" type="submit">
+                        Search
+                    </button>
+                </form>
+
+                <ul style="margin-right: 6rem !important" class="navbar-nav me-2 mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a style="font-weight: 650; font-size: larger" class="nav-link dropdown-toggle" href="#"
+                            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg style="margin-right: 0.3rem" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                                <path fill-rule="evenodd"
+                                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                            </svg>
+
+                            {{request.user.username}}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'profile' request.user.profile.pk %}"><svg
+                                        style="margin-bottom: 0.2rem; margin-right: 0.2rem"
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-person-circle" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                                        <path fill-rule="evenodd"
+                                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                                    </svg>
+                                    Profile</a>
+                            </li>
+                            <center>
+                                <hr />
+                            </center>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'log_out' %}"><svg
+                                        style="margin-bottom: 0.2rem; margin-right: 0.2rem"
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                        <path fill-rule="evenodd"
+                                            d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                                    </svg>
+                                    Log out</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar end -->
+
+    <div class="container mt-5">
+        <div class="card border-info mb-3">
+            <div class="card-header">
+                <h4>
+                    Room ID:
+                    <span class="badge bg-info text-dark"> {{room.unique_id}}</span>
+                </h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{room.name}}</h5>
+                <p class="card-text p-2">{{room.description}}</p>
+                <div class="row p-2">
+                    <strong>Participants: </strong>
+                   
+                    {% for x in room.members.all %}
+                    <div style="padding-right: 0.5rem !important; margin-top: 1rem;" class="col-sm-1">
+                        <small><svg style="margin-bottom: 0.2rem; margin-right:0.2rem" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                          </svg><strong>
+                            {% if x.total_points >= 400  %}
+                            <a style="color: red;" href="{% url 'profile' x.pk %}"><strong style="font-weight: 700;">{{x.user.username}}</strong></a>
+                            {% elif x.total_points >= 200  %}
+                            <a style="color: #e86100;" href="{% url 'profile' x.pk %}"><strong style="font-weight: 700;">{{x.user.username}}</strong></a>
+                            {% elif x.total_points >= 100  %}
+                            <a style="color: #ffc000;" href="{% url 'profile' x.pk %}"><strong style="font-weight: 700;">{{x.user.username}}</strong></a>
+                            {% elif x.total_points >= 50  %}
+                            <a style="color: blue;" href="{% url 'profile' x.pk %}"><strong style="font-weight: 700;">{{x.user.username}}</strong></a>
+                            {% else %}
+                            <a style="color: black;" href="{% url 'profile' x.pk %}"><strong style="font-weight: 700;">{{x.user.username}}</strong></a>
+                                
+                            {% endif %}
+                          </strong></small>
+                    </div>
+                    {% endfor %}
+                        
+                    
+                </div>
+            </div>
+            <div class="container mt-3 mb-5">
+                <div style="border: dotted ; height: 70vh;overflow-y: auto;" class="card" id="chatboxdiv">
+                    <div id="chatbox" style="padding: 3rem 3rem 3rem" class="card-body">
+
+                        {% for i in chats %}
+                        <div class="alert alert-success" role="alert">
+                            <h4 class="alert-heading">{{i.chatter}}</h4>
+                            <p>
+                                {{i.message}}
+                            </p>
+                            <hr />
+                            <p class="mb-0">
+                                <small>{{i.time}}</small>
+                            </p>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="message" rows="3">hello world</textarea>
+                            <input style="display: none" name="token" type="text" value="{{csrf_token}}" required />
+                            <input style="display: none" id="room_pk" type="text" value="{{room.pk}}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1 mb-5">
+                    <div class="col-sm-12">
+                        <center>
+                            <button id="sendmessagebtn" class="btn btn-primary btn-lg">Send</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#chatboxdiv').animate({
+                scrollTop: $('#chatboxdiv')[0].scrollHeight
+            }, "slow");
+
+
+            $("#sendmessagebtn").click(function () {
+                sendMessage();
+                console.log("sending");
+
+
+            })
+            // form submit
+            function sendMessage() {
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "/team/send_message",
+                    data: {
+                        message: document.getElementById('message').value,
+                        room_pk: document.getElementById('room_pk').value,
+                        dataType: "json",
+                        csrfmiddlewaretoken: $(":input[name='token']").val(),
+                    },
+                    success: function (response) {
+
+                        document.getElementById("message").value = "hello world";
+                        console.log(response);
+                        $('#chatboxdiv').animate({
+                            scrollTop: $('#chatboxdiv')[0].scrollHeight
+                        }, "slow");
+
+
+
+
+                    },
+                });
+            }
+
+            setInterval(function () {
+                $.get(location.href).then(function (page) {
+                    $("#chatbox").html($(page).find("#chatbox").html());
+                   
+
+                    console.log("refresh");
+
+                })
+
+            }, 1000)
+        });
+    </script>
+</body>
+
+</html>

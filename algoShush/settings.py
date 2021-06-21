@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'django.contrib.humanize',
-    'sub_app'
+    'sub_app',
+    'team_section'
 ]
 
 MIDDLEWARE = [
